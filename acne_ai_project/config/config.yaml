@@ -7,8 +7,8 @@ data:
   train_split: 0.7
   val_split: 0.15
   test_split: 0.15
-  num_classes: 7
-  class_names: ["Clear Skin", "Blackheads", "Whiteheads", "Papules", "Pustules", "Nodules", "Cystic Acne"]
+  num_classes: 5
+  class_names: ["Blackheads", "Whiteheads", "Papules", "Pustules", "Cystic Acne"]
 
 augmentation:
   rotation_range: 30
@@ -31,11 +31,11 @@ model:
   loss: "categorical_crossentropy"
 
 paths:
-  raw_data: "data/raw"
-  processed_data: "data/processed"
-  models: "models/saved"
-  logs: "training/logs"
-  exports: "export/web"
+  raw_data: "acne_ai_project/data/raw"
+  processed_data: "acne_ai_project/data/processed"
+  models: "acne_ai_project/models/saved"
+  logs: "acne_ai_project/training/logs"
+  exports: "acne_ai_project/export/web"
 
 deployment:
   confidence_threshold: 0.6

@@ -32,15 +32,14 @@ def predict():
         return jsonify({"error": "No image provided"}), 400
         
     file = request.files['image']
+    skin_type = request.form.get('skin_type', 'Normal')
     
-    # Save temp file
-    temp_path = "temp_uplaod.jpg"
-    file.save(temp_path)
+    # Read image bytes directly — no temp file needed
+    image_bytes = file.read()
     
     # Run Inference
     try:
-        report = pipeline.predict(temp_path)
-        os.remove(temp_path) # Clean up
+        report = pipeline.predict(image_bytes=image_bytes, skin_type=skin_type)
         return jsonify(report)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

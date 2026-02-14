@@ -1,18 +1,27 @@
 
 import os
 import sys
+
+# Set Keras Backend to PyTorch BEFORE importing keras
+os.environ["KERAS_BACKEND"] = "torch"
+
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import tensorflow as tf
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard, CSVLogger
+import keras
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard, CSVLogger
+from keras.layers import BatchNormalization
 from sklearn.utils import class_weight
 import numpy as np
 import yaml
 from models.classification_model import build_classification_model
 from data.augment_data import get_train_augmentation_generator, get_basic_generator
 
-def load_config(config_path="config/config.yaml"):
+def load_config(config_path=None):
+    if config_path is None:
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        config_path = os.path.join(base_dir, "config", "config.yaml")
+        
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -53,7 +62,9 @@ def train_classifier():
     # Class Weights
     labels = train_generator.classes
     class_weights = class_weight.compute_class_weight(
-        'balanced', classes=np.unique(labels), y=labels
+        class_weight='balanced',
+        classes=np.unique(labels),
+        y=labels
     )
     class_weights = dict(enumerate(class_weights))
     print(f"Computed Class Weights: {class_weights}")
@@ -72,9 +83,9 @@ def train_classifier():
 
     # --- PHASE 1: Feature Extraction (Frozen Base) ---
     print("\nStarting Phase 1: Feature Extraction (Frozen Base)")
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=config['model']['learning_rate_frozen']),
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate=config['model']['learning_rate_frozen']),
                   loss='categorical_crossentropy',
-                  metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
+                  metrics=['accuracy', keras.metrics.Precision(), keras.metrics.Recall()])
     
     model.fit(
         train_generator,
@@ -110,9 +121,9 @@ def train_classifier():
              layer.trainable = False
              
     # Recompile with lower learning rate
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=config['model']['learning_rate_finetune']),
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate=config['model']['learning_rate_finetune']),
                   loss='categorical_crossentropy',
-                  metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
+                  metrics=['accuracy', keras.metrics.Precision(), keras.metrics.Recall()])
     
     model.fit(
         train_generator,

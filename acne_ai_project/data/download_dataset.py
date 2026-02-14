@@ -36,7 +36,14 @@ def download_kaggle_dataset(dataset_name="tiswan14/acne-dataset-image"):
     os.makedirs(raw_dir, exist_ok=True)
     
     try:
-        # Use Kaggle CLI via subprocess for better reliability or use API
+        # Authenticate using the provided key if needed, but standard way is file.
+        # Since user provided a token string 'KGAT_...', it might be a new format or just the key.
+        # Let's try setting environment variables for KAGGLE_USERNAME and KAGGLE_KEY.
+        # But I don't have the username. 
+        # I'll just try running the command, hoping the file I create works.
+        # Wait, I don't know the username. Creating a dummy json might fail.
+        # I will try to use the 'KAGGLE_KEY' env var. 
+        
         subprocess.run(f"kaggle datasets download -d {dataset_name} -p {raw_dir} --unzip", shell=True, check=True)
         print("Download and extraction complete.")
         

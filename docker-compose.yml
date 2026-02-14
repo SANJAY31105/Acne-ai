@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./acne_ai_project
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./acne_ai_project:/app
+    environment:
+      - KERAS_BACKEND=torch
+
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - backend

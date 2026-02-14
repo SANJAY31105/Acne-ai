@@ -1,84 +1,173 @@
 {
-    "Blackheads": {
-        "description": "Small dark spots caused by oxidized oil and dead skin cells in open pores.",
-        "severity": "Mild to Moderate",
-        "treatments": [
-            "Use salicylic acid (BHA) 2% cleanser",
-            "Apply clay mask once weekly",
-            "Use non-comedogenic moisturizer",
-            "Try retinoid products (adapalene 0.1%)",
-            "Use oil-free sunscreen",
-            "Avoid pore-clogging ingredients"
-        ]
+    "Mild": {
+        "likely_types": [
+            "Blackheads (Open Comedones)",
+            "Whiteheads (Closed Comedones)"
+        ],
+        "by_skin_type": {
+            "Oily": [
+                "Use an oil-free Salicylic Acid (2%) cleanser morning and night.",
+                "Apply a lightweight, mattifying moisturizer with SPF.",
+                "Use clay masks (Kaolin) once a week to absorb excess oil.",
+                "Avoid heavy makeup — switch to mineral or oil-free foundation.",
+                "Blotting papers during the day can help control shine."
+            ],
+            "Dry": [
+                "Use a gentle, cream-based cleanser (CeraVe Hydrating).",
+                "Apply Hyaluronic Acid serum before moisturizer for deep hydration.",
+                "Use a mild BHA exfoliant (0.5% Salicylic Acid) 2x/week only.",
+                "Rich moisturizer with Ceramides to repair skin barrier.",
+                "Avoid hot water when washing — it strips moisture."
+            ],
+            "Combination": [
+                "Use Salicylic Acid on your T-zone only (nose, forehead, chin).",
+                "Apply a light gel moisturizer on oily zones, cream on dry zones.",
+                "Multi-masking: clay mask on T-zone, hydrating mask on cheeks.",
+                "Use non-comedogenic SPF daily."
+            ],
+            "Sensitive": [
+                "Avoid Salicylic Acid — use Azelaic Acid (10%) instead.",
+                "Fragrance-free everything: cleanser, moisturizer, sunscreen.",
+                "Patch test all new products on your inner arm first.",
+                "Centella Asiatica (Cica) cream helps soothe and heal.",
+                "Minimize skincare steps — less is more for sensitive skin."
+            ],
+            "Normal": [
+                "Use a gentle foaming cleanser with Salicylic Acid.",
+                "Apply a light moisturizer with SPF 30+.",
+                "Exfoliate once a week with a BHA or AHA product.",
+                "Change pillowcases every 2-3 days to prevent bacteria buildup."
+            ]
+        },
+        "type_treatments": {
+            "Blackheads": [
+                "BHA (Salicylic Acid 2%) dissolves pore buildup.",
+                "Pore strips can give instant relief but aren't a long-term fix.",
+                "Retinol at night prevents new blackheads from forming."
+            ],
+            "Whiteheads": [
+                "Adapalene (Differin) gel speeds cell turnover.",
+                "Gentle chemical exfoliation with AHA (Glycolic Acid).",
+                "Never squeeze — it pushes bacteria deeper and causes scarring."
+            ]
+        }
     },
-    "Whiteheads": {
-        "description": "Small white bumps caused by trapped oil and skin cells in closed pores.",
-        "severity": "Mild to Moderate",
-        "treatments": [
-            "Use benzoyl peroxide 2.5-5%",
-            "Apply AHA exfoliant (glycolic acid 5-10%)",
-            "Use lightweight gel moisturizer",
-            "Avoid heavy creams and oils",
-            "Gentle cleansing twice daily"
-        ]
+    "Moderate": {
+        "likely_types": [
+            "Papules (Red, Inflamed Bumps)",
+            "Pustules (Pus-filled Pimples)"
+        ],
+        "by_skin_type": {
+            "Oily": [
+                "Use Benzoyl Peroxide (5%) wash in the morning.",
+                "Apply Retinoid (Adapalene 0.1%) at night on clean skin.",
+                "Niacinamide (10%) serum controls oil AND reduces inflammation.",
+                "Use a gel-based, oil-free moisturizer.",
+                "Zinc supplements (30mg/day) can help reduce oil production."
+            ],
+            "Dry": [
+                "Use Benzoyl Peroxide (2.5%) — lower concentration to avoid drying.",
+                "Apply Retinoid only every other night, always with moisturizer.",
+                "Use Hyaluronic Acid serum to counteract drying effects of treatments.",
+                "Squalane oil is non-comedogenic and deeply hydrating.",
+                "Avoid foaming cleansers — use cream or milk cleansers."
+            ],
+            "Combination": [
+                "Apply Benzoyl Peroxide spot treatment on inflamed areas only.",
+                "Use Retinoid on oily/acne-prone zones, skip dry areas.",
+                "Niacinamide works great for combination skin — balances oil.",
+                "Lightweight gel moisturizer with Aloe Vera."
+            ],
+            "Sensitive": [
+                "Skip Benzoyl Peroxide — use Azelaic Acid (15%) instead.",
+                "Retinoid at lowest dose (0.025%), only 2-3x/week.",
+                "Green tea extract reduces inflammation without irritation.",
+                "Aloe Vera gel as moisturizer to calm redness.",
+                "If irritation persists, see a dermatologist for prescription options."
+            ],
+            "Normal": [
+                "Benzoyl Peroxide (2.5-5%) wash or spot treatment.",
+                "Retinoid (Adapalene) at night for prevention.",
+                "Consistent routine for 6-8 weeks before expecting results.",
+                "Avoid touching your face during the day."
+            ]
+        },
+        "type_treatments": {
+            "Papules": [
+                "Benzoyl Peroxide kills bacteria causing the inflammation.",
+                "Azelaic Acid reduces redness and swelling.",
+                "Ice the area for 5 minutes to reduce swelling quickly."
+            ],
+            "Pustules": [
+                "Targeted Benzoyl Peroxide (5%) spot treatment.",
+                "Let pustules drain naturally — do NOT squeeze.",
+                "Tea tree oil (diluted 5%) has natural antibacterial properties."
+            ]
+        }
     },
-    "Papules": {
-        "description": "Small red or pink inflamed bumps without a visible pus tip.",
-        "severity": "Moderate",
-        "treatments": [
-            "Benzoyl peroxide spot treatment",
-            "Niacinamide serum (10%)",
-            "Gentle fragrance-free cleanser",
-            "Anti-inflammatory ingredients (centella, aloe)",
-            "Do not pick or squeeze",
-            "If persistent, see dermatologist"
-        ]
+    "Severe": {
+        "likely_types": [
+            "Cystic Acne (Deep, Painful Cysts)",
+            "Nodular Acne (Hard Lumps Under Skin)"
+        ],
+        "by_skin_type": {
+            "Oily": [
+                "See a dermatologist — you likely need Isotretinoin (Accutane).",
+                "Oral antibiotics (Doxycycline) can reduce bacterial infection.",
+                "Use a gentle cleanser — aggressive products make it worse.",
+                "Oil-free SPF is crucial — sun exposure darkens acne scars.",
+                "Consider Spironolactone if hormonal (common in women)."
+            ],
+            "Dry": [
+                "Dermatologist visit is essential — prescription treatments needed.",
+                "If prescribed Isotretinoin, expect extreme dryness — use Aquaphor.",
+                "CeraVe Moisturizing Cream is a must during treatment.",
+                "Drink extra water — at least 3 liters/day during treatment.",
+                "Lip balm with SPF — lips will crack on Isotretinoin."
+            ],
+            "Combination": [
+                "Consult a dermatologist for a combination approach.",
+                "Oral + topical treatment usually works best for combo skin.",
+                "Gentle cleansing is key — avoid any harsh scrubs.",
+                "Non-comedogenic SPF 50 daily."
+            ],
+            "Sensitive": [
+                "See a dermatologist immediately — do NOT self-treat severe acne.",
+                "Sensitive skin + severe acne = prescription-only approach.",
+                "Extremely gentle products only: Vanicream or La Roche-Posay Toleriane.",
+                "Cortisone injections can help flatten painful cysts quickly.",
+                "Avoid all DIY treatments — they can cause permanent damage."
+            ],
+            "Normal": [
+                "Dermatologist consultation is strongly recommended.",
+                "Isotretinoin is the gold standard for severe cystic acne.",
+                "Treatment takes 3-6 months — patience is key.",
+                "Avoid picking or squeezing — it causes permanent scarring.",
+                "Maintain a low-inflammation diet: Omega-3, vegetables, water."
+            ]
+        },
+        "type_treatments": {
+            "Cystic Acne": [
+                "Cortisone injections flatten cysts within 24 hours.",
+                "Isotretinoin (Accutane) is the most effective long-term treatment.",
+                "Oral antibiotics reduce bacterial load during flare-ups."
+            ],
+            "Nodular Acne": [
+                "Intralesional steroid injections for painful nodules.",
+                "Prescription-strength Retinoids are usually necessary.",
+                "Hormonal therapy (Spironolactone) may help women."
+            ]
+        }
     },
-    "Pustules": {
-        "description": "Red bumps with a white or yellow pus-filled tip.",
-        "severity": "Moderate",
-        "treatments": [
-            "Benzoyl peroxide 5% + salicylic acid",
-            "Warm compress to reduce inflammation",
-            "Tea tree oil (diluted to 5%)",
-            "Zinc supplements may help",
-            "Avoid touching face",
-            "Consider prescription topical antibiotics"
-        ]
-    },
-    "Nodules": {
-        "description": "Large, hard, painful lumps deep under the skin.",
-        "severity": "Severe",
-        "treatments": [
-            "MUST see dermatologist",
-            "Prescription oral antibiotics likely needed",
-            "Do NOT attempt to pop or squeeze",
-            "Apply ice to reduce swelling and pain",
-            "Prescription retinoids may be needed",
-            "Hormonal therapy for hormonal acne"
-        ]
-    },
-    "Cystic Acne": {
-        "description": "Large, pus-filled, deep, and painful lumps. High risk of scarring.",
-        "severity": "Very Severe",
-        "treatments": [
-            "URGENT: See dermatologist",
-            "Isotretinoin (Accutane) may be prescribed",
-            "Cortisone injections by dermatologist",
-            "Do NOT drain or pop",
-            "Apply ice for pain relief",
-            "Prescription treatment is essential",
-            "May need hormonal evaluation"
-        ]
-    },
-    "Clear Skin": {
-        "description": "Healthy skin with no visible active acne.",
-        "severity": "None",
-        "treatments": [
-            "Maintain gentle cleansing routine",
-            "Use daily sunscreen (SPF 30+)",
-            "Moisturize to maintain skin barrier",
-            "Stay hydrated and maintain healthy diet"
+    "Inconclusive": {
+        "likely_types": [],
+        "by_skin_type": {},
+        "type_treatments": {},
+        "general": [
+            "The image quality was too low for a confident assessment.",
+            "Try again with better lighting and a clearer photo.",
+            "Make sure your face is centered and well-lit.",
+            "If problems persist, consult a dermatologist in person."
         ]
     }
 }

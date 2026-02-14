@@ -1,11 +1,17 @@
 
-import tensorflow as tf
-from tensorflow.keras.applications import EfficientNetB3
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
+import keras
+from keras.applications import EfficientNetB3
+from keras import Model
+from keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
 import yaml
 
-def load_config(config_path="config/config.yaml"):
+import os
+
+def load_config(config_path=None):
+    if config_path is None:
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        config_path = os.path.join(base_dir, "config", "config.yaml")
+
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
