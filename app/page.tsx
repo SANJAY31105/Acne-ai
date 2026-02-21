@@ -118,13 +118,17 @@ export default function Home() {
             ACNE AI
           </Link>
           <div className="flex items-center gap-4 md:gap-8">
-            {['Skin Quiz', 'Scan', 'History'].map((item) => (
+            {[
+              { label: 'Skin Quiz', href: '/skin-quiz' },
+              { label: 'Scan', href: '/analyze' },
+              { label: 'History', href: '/history' },
+            ].map((item) => (
               <Link
-                key={item}
-                href={`/${item.toLowerCase().replace(' ', '-')}`}
+                key={item.label}
+                href={item.href}
                 className="text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase text-zinc-400 hover:text-white transition-all relative overflow-hidden group/link"
               >
-                {item}
+                {item.label}
                 <span className="absolute bottom-0 left-0 w-full h-[1px] bg-indigo-500 translate-x-[-101%] group-hover/link:translate-x-0 transition-transform duration-500" />
               </Link>
             ))}
