@@ -123,16 +123,19 @@ class AcnePipeline:
             
         rgb_img = cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB)
         
-        # 2. Try Face Detection (optional - use full image if no face found)
+        # 2. Face Detection (REQUIRED — reject non-face images)
         cropped_face, bbox = self.face_detector.detect_and_crop(rgb_img)
         
         if cropped_face is not None:
             analysis_img = cropped_face
             face_detected = True
         else:
-            # Use full image if no face detected (more lenient for demo)
-            analysis_img = rgb_img
-            face_detected = False
+            # NO face found → reject the image
+            return {
+                "status": "error",
+                "message": "No face detected. Please upload a clear photo of your face.",
+                "face_detected": False
+            }
             
         # 3. Severity Classification
         img_size = tuple(self.config['data']['image_size'])

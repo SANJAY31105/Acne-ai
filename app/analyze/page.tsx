@@ -89,6 +89,13 @@ export default function AnalyzePage() {
             }
 
             const data = await response.json();
+
+            // Check if the backend rejected the image (e.g., no face detected)
+            if (data.status === "error") {
+                setError(data.message || "Analysis failed. Please try a different image.");
+                return;
+            }
+
             setResults(data);
 
             // Save to History

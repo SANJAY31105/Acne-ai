@@ -58,14 +58,6 @@ class FaceDetector:
             except Exception as e:
                 print(f"MediaPipe error: {e}")
         
-        # Fallback: Center Crop (Simulated Face Detection)
-        print("Using fallback center crop.")
-        center_x, center_y = w // 2, h // 2
-        crop_size = min(w, h) // 2
-        x_start = max(0, center_x - crop_size)
-        y_start = max(0, center_y - crop_size)
-        x_end = min(w, center_x + crop_size)
-        y_end = min(h, center_y + crop_size)
-        
-        cropped_face = image[y_start:y_end, x_start:x_end]
-        return cropped_face, (x_start, y_start, x_end, y_end)
+        # Fallback: No face detected — return None to signal rejection
+        print("No face detected in image.")
+        return None, None
