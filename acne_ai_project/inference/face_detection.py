@@ -16,10 +16,27 @@ class FaceDetector:
         except AttributeError:
              print("Warning: MediaPipe found but missing attributes. Using fallback face detection (center crop).")
 
+    def _is_skin_image(self, image, threshold=0.25):
+        """
+        Check if the image contains a significant amount of skin-toned pixels.
+        This allows close-up skin/acne photos that don't show the full face.
+        Uses HSV color space skin detection.
+        Returns True if more than `threshold` (25%) of pixels are skin-colored.
+        """
+        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        # Skin tone range in HSV (covers a wide range of skin tones)
+        lower_skin = np.array([0, 30, 60], dtype=np.uint8)
+        upper_skin = np.array([35, 255, 255], dtype=np.uint8)
+        mask = cv2.inRange(hsv, lower_skin, upper_skin)
+        skin_ratio = np.count_nonzero(mask) / mask.size
+        print(f"Skin detection: {skin_ratio*100:.1f}% skin pixels (threshold: {threshold*100:.0f}%)")
+        return skin_ratio > threshold
+
     def detect_and_crop(self, image, padding=0.2):
         """
         Detects face in image and crops with padding.
-        Returns: cropped_face (numpy array) or None if no face found.
+        Falls back to skin-tone detection for close-up photos.
+        Returns: cropped_face (numpy array) or None if no face/skin found.
         """
         if isinstance(image, str):
             image = cv2.imread(image)
@@ -58,6 +75,11 @@ class FaceDetector:
             except Exception as e:
                 print(f"MediaPipe error: {e}")
         
-        # Fallback: No face detected — return None to signal rejection
-        print("No face detected in image.")
+        # Fallback: No full face found — check if it's a close-up skin photo
+        if self._is_skin_image(image):
+            print("No full face detected, but image contains skin. Accepting as close-up skin photo.")
+            return image, (0, 0, w, h)
+        
+        print("No face or skin detected in image.")
         return None, None
+

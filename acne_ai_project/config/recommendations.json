@@ -4,6 +4,66 @@
             "Blackheads (Open Comedones)",
             "Whiteheads (Closed Comedones)"
         ],
+        "timeline": "4–6 weeks with consistent use",
+        "key_ingredients": [
+            {
+                "name": "Salicylic Acid (2%)",
+                "purpose": "Unclogs pores & exfoliates"
+            },
+            {
+                "name": "Niacinamide",
+                "purpose": "Reduces redness & oil"
+            },
+            {
+                "name": "Retinol",
+                "purpose": "Prevents new comedones"
+            }
+        ],
+        "morning_routine": [
+            "Gentle foaming cleanser (Salicylic Acid-based)",
+            "Niacinamide serum (10%) — controls oil & redness",
+            "Lightweight SPF 30+ moisturizer"
+        ],
+        "night_routine": [
+            "Double cleanse: oil cleanser → water-based cleanser",
+            "BHA exfoliant (2% Salicylic Acid) — 3x/week only",
+            "Retinol serum (0.3%) — start every other night",
+            "Hydrating moisturizer with Ceramides"
+        ],
+        "dos": [
+            "Change pillowcases every 2–3 days",
+            "Stay hydrated — at least 2 liters of water daily",
+            "Use non-comedogenic products only",
+            "Be patient — results take 4–6 weeks"
+        ],
+        "donts": [
+            "Don't squeeze or pop blackheads/whiteheads",
+            "Don't skip sunscreen — UV darkens marks",
+            "Don't over-wash — 2x/day is enough",
+            "Don't use harsh scrubs on active breakouts"
+        ],
+        "products": [
+            {
+                "name": "CeraVe SA Cleanser",
+                "type": "Cleanser",
+                "key_ingredient": "Salicylic Acid 2%"
+            },
+            {
+                "name": "The Ordinary Niacinamide 10%",
+                "type": "Serum",
+                "key_ingredient": "Niacinamide + Zinc"
+            },
+            {
+                "name": "Differin Gel (Adapalene)",
+                "type": "Treatment",
+                "key_ingredient": "Adapalene 0.1%"
+            },
+            {
+                "name": "La Roche-Posay Anthelios",
+                "type": "Sunscreen",
+                "key_ingredient": "SPF 50+"
+            }
+        ],
         "by_skin_type": {
             "Oily": [
                 "Use an oil-free Salicylic Acid (2%) cleanser morning and night.",
@@ -56,6 +116,76 @@
         "likely_types": [
             "Papules (Red, Inflamed Bumps)",
             "Pustules (Pus-filled Pimples)"
+        ],
+        "timeline": "6–8 weeks for visible improvement",
+        "key_ingredients": [
+            {
+                "name": "Benzoyl Peroxide (2.5–5%)",
+                "purpose": "Kills acne bacteria"
+            },
+            {
+                "name": "Adapalene (Retinoid)",
+                "purpose": "Speeds cell turnover"
+            },
+            {
+                "name": "Niacinamide (10%)",
+                "purpose": "Anti-inflammatory & oil control"
+            },
+            {
+                "name": "Azelaic Acid",
+                "purpose": "Reduces redness & marks"
+            }
+        ],
+        "morning_routine": [
+            "Benzoyl Peroxide (2.5–5%) face wash",
+            "Niacinamide (10%) serum — oil control + anti-inflammation",
+            "Oil-free moisturizer with SPF 30+",
+            "Spot treatment on active pimples if needed"
+        ],
+        "night_routine": [
+            "Gentle cleanser — no actives (to avoid over-drying)",
+            "Adapalene (Differin 0.1%) on clean skin — every night",
+            "Wait 15 min, then apply moisturizer with Ceramides",
+            "Hydrocolloid patches on pustules overnight"
+        ],
+        "dos": [
+            "Be consistent — stick to routine for 8 full weeks",
+            "Ice inflamed pimples for 5 min to reduce swelling",
+            "Introduce new actives one at a time (purging is normal)",
+            "Keep your hands off your face during the day"
+        ],
+        "donts": [
+            "Don't mix Benzoyl Peroxide with Retinoids at the same time",
+            "Don't pop pustules — it spreads bacteria and causes scars",
+            "Don't use more than 5% BP — higher % just irritates more",
+            "Don't give up after 2 weeks — actives need 6–8 weeks to work"
+        ],
+        "products": [
+            {
+                "name": "PanOxyl 4% Wash",
+                "type": "Cleanser",
+                "key_ingredient": "Benzoyl Peroxide 4%"
+            },
+            {
+                "name": "Differin Gel",
+                "type": "Treatment",
+                "key_ingredient": "Adapalene 0.1%"
+            },
+            {
+                "name": "The Ordinary Niacinamide",
+                "type": "Serum",
+                "key_ingredient": "Niacinamide 10% + Zinc"
+            },
+            {
+                "name": "COSRX Pimple Patches",
+                "type": "Spot Treatment",
+                "key_ingredient": "Hydrocolloid"
+            },
+            {
+                "name": "CeraVe PM Moisturizer",
+                "type": "Moisturizer",
+                "key_ingredient": "Ceramides + Niacinamide"
+            }
         ],
         "by_skin_type": {
             "Oily": [
@@ -110,6 +240,71 @@
             "Cystic Acne (Deep, Painful Cysts)",
             "Nodular Acne (Hard Lumps Under Skin)"
         ],
+        "timeline": "3–6 months with professional treatment",
+        "key_ingredients": [
+            {
+                "name": "Isotretinoin (Accutane)",
+                "purpose": "Gold standard for severe acne"
+            },
+            {
+                "name": "Doxycycline",
+                "purpose": "Oral antibiotic for infection"
+            },
+            {
+                "name": "Spironolactone",
+                "purpose": "Hormonal acne (women)"
+            },
+            {
+                "name": "Cortisone",
+                "purpose": "Injection to flatten cysts"
+            }
+        ],
+        "morning_routine": [
+            "Ultra-gentle cleanser (Vanicream or CeraVe Hydrating)",
+            "Azelaic Acid (15%) — reduces redness without irritation",
+            "Rich moisturizer (CeraVe Moisturizing Cream)",
+            "SPF 50+ sunscreen — mandatory to prevent scarring"
+        ],
+        "night_routine": [
+            "Gentle cleanse — no scrubs, no actives",
+            "Prescription treatment as directed by dermatologist",
+            "Heavy moisture barrier repair cream",
+            "Lip balm with SPF — if on Isotretinoin"
+        ],
+        "dos": [
+            "See a dermatologist — prescription treatment is essential",
+            "Drink 3+ liters of water daily (especially on Isotretinoin)",
+            "Take before/after photos monthly to track progress",
+            "Be patient — severe acne treatment takes 3–6 months"
+        ],
+        "donts": [
+            "NEVER squeeze or pick at cysts — causes permanent scars",
+            "Don't self-treat severe acne with OTC products alone",
+            "Don't use harsh exfoliants or scrubs",
+            "Don't skip dermatologist appointments"
+        ],
+        "products": [
+            {
+                "name": "Vanicream Gentle Cleanser",
+                "type": "Cleanser",
+                "key_ingredient": "Ultra-gentle, fragrance-free"
+            },
+            {
+                "name": "CeraVe Moisturizing Cream",
+                "type": "Moisturizer",
+                "key_ingredient": "Ceramides + Hyaluronic Acid"
+            },
+            {
+                "name": "EltaMD UV Clear SPF 46",
+                "type": "Sunscreen",
+                "key_ingredient": "Niacinamide + Zinc Oxide"
+            },
+            {
+                "name": "Aquaphor Healing Ointment",
+                "type": "Skin Repair",
+                "key_ingredient": "Petrolatum (barrier repair)"
+            }
+        ],
         "by_skin_type": {
             "Oily": [
                 "See a dermatologist — you likely need Isotretinoin (Accutane).",
@@ -161,6 +356,13 @@
     },
     "Inconclusive": {
         "likely_types": [],
+        "timeline": null,
+        "key_ingredients": [],
+        "morning_routine": [],
+        "night_routine": [],
+        "dos": [],
+        "donts": [],
+        "products": [],
         "by_skin_type": {},
         "type_treatments": {},
         "general": [

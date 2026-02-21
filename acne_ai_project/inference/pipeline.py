@@ -88,7 +88,14 @@ class AcnePipeline:
             return {
                 "likely_types": entry.get("likely_types", []),
                 "personalized_plan": skin_recs,
-                "type_treatments": entry.get("type_treatments", {})
+                "type_treatments": entry.get("type_treatments", {}),
+                "timeline": entry.get("timeline"),
+                "key_ingredients": entry.get("key_ingredients", []),
+                "morning_routine": entry.get("morning_routine", []),
+                "night_routine": entry.get("night_routine", []),
+                "dos": entry.get("dos", []),
+                "donts": entry.get("donts", []),
+                "products": entry.get("products", []),
             }
         return {
             "likely_types": [],
@@ -137,8 +144,11 @@ class AcnePipeline:
                 "face_detected": False
             }
             
-        # 3. Severity Classification
-        img_size = tuple(self.config['data']['image_size'])
+        # 3. Severity Classification — use model's own input shape, NOT config
+        # This prevents mismatch when config is updated for new training but old model is loaded
+        model_input_shape = self.classifier.input_shape  # e.g. (None, 224, 224, 3)
+        img_size = (model_input_shape[1], model_input_shape[2])
+        print(f"Model expects input size: {img_size}")
         input_img = cv2.resize(analysis_img, img_size)
         input_img = input_img / 255.0
         input_img = np.expand_dims(input_img, axis=0)

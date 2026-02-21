@@ -79,7 +79,7 @@ export default function HistoryList() {
                     <div className="grow min-w-0">
                         <div className="flex justify-between items-start mb-1">
                             <div>
-                                <h3 className="font-semibold text-white/90 truncate">{item.diagnosis.acne_type}</h3>
+                                <h3 className="font-semibold text-white/90 truncate">{item.diagnosis?.acne_type ?? 'Skin Analysis'}</h3>
                                 <div className="text-xs text-slate-400 flex items-center gap-1">
                                     <Calendar className="w-3 h-3" />
                                     {new Date(item.date).toLocaleDateString()}

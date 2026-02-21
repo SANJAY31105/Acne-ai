@@ -128,14 +128,19 @@ export default function AnalyzePage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-zinc-100 p-6 md:p-12 font-sans">
-            <header className="mb-8 flex justify-between items-center max-w-4xl mx-auto">
-                <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Acne AI
+        <div className="min-h-screen bg-[#030303] text-white p-6 md:p-12 font-sans antialiased selection:bg-indigo-500/30">
+            <header className="mb-8 flex justify-between items-center max-w-5xl mx-auto">
+                <Link href="/" className="text-xl md:text-2xl font-black tracking-[0.3em] uppercase text-white hover:text-indigo-400 transition-all duration-500">
+                    ACNE AI
                 </Link>
-                <div className="flex items-center gap-4">
-                    <Link href="/history" className="text-sm font-medium text-zinc-400 hover:text-white transition">
+                <div className="flex items-center gap-4 md:gap-6">
+                    <Link href="/skin-quiz" className="text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase text-zinc-400 hover:text-white transition-all relative overflow-hidden group/link">
+                        Skin Quiz
+                        <span className="absolute bottom-0 left-0 w-full h-[1px] bg-indigo-500 translate-x-[-101%] group-hover/link:translate-x-0 transition-transform duration-500" />
+                    </Link>
+                    <Link href="/history" className="text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase text-zinc-400 hover:text-white transition-all relative overflow-hidden group/link">
                         History
+                        <span className="absolute bottom-0 left-0 w-full h-[1px] bg-indigo-500 translate-x-[-101%] group-hover/link:translate-x-0 transition-transform duration-500" />
                     </Link>
                     <button
                         onClick={() => {
@@ -150,19 +155,19 @@ export default function AnalyzePage() {
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto">
+            <main className="max-w-5xl mx-auto">
                 {results ? (
                     <ResultsView results={results} image={image!} onReset={reset} />
                 ) : (
                     <div className="flex flex-col items-center gap-8">
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-center tracking-tight">
+                        <h1 className="text-4xl md:text-5xl font-black text-center tracking-tight">
                             Analyze Your Skin
                         </h1>
-                        <p className="text-zinc-400 text-center max-w-lg text-lg">
+                        <p className="text-zinc-500 text-center max-w-lg text-sm tracking-wide">
                             Take a photo or upload an image to get an AI-powered analysis of your skin condition and personalized treatment recommendations.
                         </p>
 
-                        <div className="w-full max-w-md aspect-[3/4] bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl relative flex flex-col items-center justify-center">
+                        <div className="w-full max-w-md aspect-[3/4] bg-white/[0.02] rounded-3xl overflow-hidden border border-white/5 shadow-2xl shadow-black/40 relative flex flex-col items-center justify-center backdrop-blur-sm">
                             {image ? (
                                 <div className="relative w-full h-full">
                                     <Image
@@ -202,7 +207,7 @@ export default function AnalyzePage() {
                                         Open Camera
                                     </button>
                                     <span className="text-zinc-500 text-sm">or</span>
-                                    <label className="flex items-center gap-3 px-8 py-4 bg-zinc-800 hover:bg-zinc-700 text-white rounded-full font-semibold transition-all cursor-pointer border border-zinc-700">
+                                    <label className="flex items-center gap-3 px-8 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-full font-bold transition-all cursor-pointer border border-white/10 hover:border-white/20">
                                         <Upload className="w-6 h-6" />
                                         Upload Photo
                                         <input
