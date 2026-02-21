@@ -2,14 +2,13 @@
 
 import { useRef, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { PerspectiveCamera, Points, PointMaterial, Trail } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing";
+import { PerspectiveCamera, Points, PointMaterial } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import {
     Mesh, Vector3, MathUtils, SphereGeometry, BufferAttribute,
-    TorusGeometry, RingGeometry, CatmullRomCurve3, TubeGeometry,
-    Color, AdditiveBlending, Float32BufferAttribute
+    CatmullRomCurve3, TubeGeometry,
+    AdditiveBlending
 } from "three";
-import { BlendFunction } from "postprocessing";
 
 /* ─────────────────────────────────────────────
    FACE GEOMETRY — high-res deformed sphere
@@ -505,14 +504,8 @@ export default function HeroScene() {
                         <Bloom
                             luminanceThreshold={0.6}
                             mipmapBlur
-                            intensity={1.8}
-                            radius={0.5}
-                        />
-                        <ChromaticAberration
-                            blendFunction={BlendFunction.NORMAL}
-                            offset={[0.0008, 0.0008] as any}
-                            radialModulation={false}
-                            modulationOffset={0}
+                            intensity={2.0}
+                            radius={0.55}
                         />
                         <Vignette eskil={false} offset={0.12} darkness={1.2} />
                     </EffectComposer>
