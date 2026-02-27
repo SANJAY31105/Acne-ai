@@ -21,7 +21,7 @@ const urgencyConfig: Record<string, { message: string; icon: any; color: string;
     },
     Moderate: {
         label: "Monitor Closely",
-        message: "Consider visiting a dermatologist if symptoms persist beyond 6–8 weeks.",
+        message: "Consider visiting a dermatologist if symptoms persist beyond 6-8 weeks.",
         icon: Stethoscope,
         color: "text-amber-400",
         bgClass: "bg-amber-500/5 border-amber-500/20",

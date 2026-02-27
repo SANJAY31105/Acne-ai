@@ -108,7 +108,7 @@ export default function Home() {
   ];
 
   return (
-    <div ref={containerRef} className="bg-[#030303] text-white selection:bg-indigo-500/30 overflow-x-hidden antialiased">
+    <div ref={containerRef} className="text-white selection:bg-indigo-500/30 overflow-x-hidden antialiased">
       <HeroScene />
 
       {/* ─── NAVBAR ─── */}
