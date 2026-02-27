@@ -1,388 +1,273 @@
 "use client";
 
-import { useRef, useMemo, Suspense } from "react";
+import { useRef, useMemo, Suspense, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera, Points, PointMaterial } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
-import {
-    Mesh, Vector3, MathUtils, SphereGeometry, BufferAttribute,
-    CatmullRomCurve3, TubeGeometry,
-    AdditiveBlending
-} from "three";
+import * as THREE from "three";
 
 /* ─────────────────────────────────────────────
-   FACE GEOMETRY — high-res deformed sphere
-   with proper brow ridge, cheeks, nose, chin
+   VOXEL FACE — hundreds of pixel cubes forming a face
 ───────────────────────────────────────────── */
-function buildFaceGeo() {
-    const geo = new SphereGeometry(2.0, 64, 64);
-    const pos = geo.attributes.position as BufferAttribute;
-    const v = new Vector3();
+function generateVoxelPositions() {
+    const voxels: { pos: [number, number, number]; color: string; size: number; region: string }[] = [];
 
-    for (let i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i);
-        const { x, y, z } = v;
-        const nx = x / 2.0, ny = y / 2.0, nz = z / 2.0;
+    // Face silhouette mask — returns true if (x, y) is "inside" the face outline
+    const insideFace = (x: number, y: number): boolean => {
+        // Elliptical face: narrower at top and tapers at chin
+        const ny = y / 3.0; // normalize y from approx -3 to +3
+        let halfWidth: number;
 
-        // Head elongation
-        v.y *= 1.28;
-        v.x *= 0.80;
-        v.z *= 0.86;
-
-        // ── Forehead: dome it forward ──
-        if (ny > 0.55 && nz > 0) {
-            v.z += 0.12 * nz * Math.max(0, ny - 0.55);
+        if (ny > 0.6) {
+            // Forehead — rounded dome
+            halfWidth = 1.2 * Math.sqrt(Math.max(0, 1 - ((ny - 0.2) / 1.1) ** 2));
+        } else if (ny > -0.4) {
+            // Mid face — cheekbones
+            halfWidth = 1.25;
+        } else {
+            // Jaw taper
+            halfWidth = 1.25 * Math.max(0, 1 - ((ny + 0.4) / 0.9) ** 1.8);
         }
 
-        // ── Brow ridge ──
-        if (ny > 0.35 && ny < 0.55 && nz > 0.5) {
-            v.z += 0.22 * nz * Math.exp(-8 * (ny - 0.45) ** 2);
+        return Math.abs(x) < halfWidth;
+    };
+
+    const step = 0.22;
+
+    for (let y = -2.8; y <= 3.2; y += step) {
+        for (let x = -1.8; x <= 1.8; x += step) {
+            if (!insideFace(x, y)) continue;
+
+            const ny = y / 3.0;
+            const ax = Math.abs(x);
+
+            // Determine region for coloring
+            let region = "skin";
+            let color = "#6366f1";
+            let size = 0.08;
+
+            // Eyes
+            if (ny > 0.08 && ny < 0.28 && ax > 0.28 && ax < 0.7) {
+                region = "eye";
+                color = "#22d3ee";
+                size = 0.09;
+            }
+            // Eyebrows
+            else if (ny > 0.28 && ny < 0.42 && ax > 0.2 && ax < 0.85) {
+                region = "brow";
+                color = "#a5b4fc";
+                size = 0.085;
+            }
+            // Nose bridge
+            else if (ny > -0.2 && ny < 0.15 && ax < 0.18) {
+                region = "nose";
+                color = "#818cf8";
+                size = 0.075;
+            }
+            // Nose tip / nostrils
+            else if (ny > -0.30 && ny < -0.15 && ax < 0.35) {
+                region = "nose";
+                color = "#818cf8";
+                size = 0.08;
+            }
+            // Mouth
+            else if (ny > -0.55 && ny < -0.38 && ax < 0.5) {
+                region = "mouth";
+                color = "#f0abfc";
+                size = 0.075;
+            }
+            // Cheeks
+            else if (ny > -0.25 && ny < 0.15 && ax > 0.75) {
+                region = "cheek";
+                color = "#4f46e5";
+                size = 0.07;
+            }
+            // Forehead
+            else if (ny > 0.5) {
+                region = "forehead";
+                color = "#4338ca";
+                size = 0.075;
+            }
+            // Chin
+            else if (ny < -0.6) {
+                region = "chin";
+                color = "#4338ca";
+                size = 0.07;
+            }
+
+            // Add small random Z depth for face curvature
+            const rFace = 2.2;
+            const dist = Math.sqrt(x * x + (y * 0.8) ** 2);
+            const z = Math.sqrt(Math.max(0, rFace ** 2 - dist ** 2)) - rFace + 0.5;
+
+            // Small jitter for organic feel
+            const jx = (Math.random() - 0.5) * 0.02;
+            const jy = (Math.random() - 0.5) * 0.02;
+            const jz = (Math.random() - 0.5) * 0.02;
+
+            voxels.push({
+                pos: [x + jx, y + jy, z + jz],
+                color,
+                size: size + (Math.random() - 0.5) * 0.015,
+                region,
+            });
         }
-
-        // ── Cheekbones ──
-        const cheek = Math.exp(-6 * (ny - 0.0) ** 2) * Math.exp(-4 * (Math.abs(nx) - 0.55) ** 2);
-        if (nz > 0) v.z += 0.18 * cheek * nz;
-
-        // ── Nose bridge + tip ──
-        const noseMask = Math.exp(-25 * nx ** 2);
-        if (ny > -0.3 && ny < 0.45 && nz > 0) {
-            v.z += noseMask * 0.35 * nz * Math.exp(-4 * (ny - 0.1) ** 2);
-        }
-
-        // ── Lip area: slight pout ──
-        const lipMask = Math.exp(-20 * nx ** 2) * Math.exp(-14 * (ny + 0.35) ** 2);
-        if (nz > 0) v.z += lipMask * 0.18 * nz;
-
-        // ── Jaw / chin taper ──
-        if (ny < -0.55) {
-            const taper = Math.abs(ny + 0.55);
-            v.x *= 1 - taper * 0.7;
-            v.z *= 1 - taper * 0.3;
-        }
-
-        // ── Temples: slight concave ──
-        const templeMask = Math.exp(-6 * (ny - 0.4) ** 2) * Math.exp(-5 * (Math.abs(nx) - 0.7) ** 2);
-        v.x *= 1 - templeMask * 0.12;
-
-        pos.setXYZ(i, v.x, v.y, v.z);
     }
-    pos.needsUpdate = true;
-    geo.computeVertexNormals();
-    return geo;
+
+    return voxels;
 }
 
-/* ─────────────────────────────────────────────
-   FACIAL LANDMARK POSITIONS
-───────────────────────────────────────────── */
-const LANDMARKS = [
-    // Eyes
-    new Vector3(-0.62, 0.55, 1.52), // left eye
-    new Vector3(0.62, 0.55, 1.52),  // right eye
-    // Pupils
-    new Vector3(-0.62, 0.55, 1.72),
-    new Vector3(0.62, 0.55, 1.72),
-    // Brow ends
-    new Vector3(-0.95, 0.8, 1.2),
-    new Vector3(0.95, 0.8, 1.2),
-    new Vector3(-0.3, 0.85, 1.55),
-    new Vector3(0.3, 0.85, 1.55),
-    // Nose
-    new Vector3(0, 0.1, 2.0),       // nose tip
-    new Vector3(-0.22, -0.08, 1.85),
-    new Vector3(0.22, -0.08, 1.85),
-    // Mouth corners
-    new Vector3(-0.38, -0.45, 1.78),
-    new Vector3(0.38, -0.45, 1.78),
-    new Vector3(0, -0.38, 1.88),    // cupid's bow
-    new Vector3(0, -0.55, 1.82),    // bottom lip
-    // Chin
-    new Vector3(0, -1.05, 1.5),
-    new Vector3(-0.25, -0.85, 1.65),
-    new Vector3(0.25, -0.85, 1.65),
-    // Cheekbones
-    new Vector3(-0.78, 0.15, 1.65),
-    new Vector3(0.78, 0.15, 1.65),
-    // Temples
-    new Vector3(-1.05, 0.45, 0.9),
-    new Vector3(1.05, 0.45, 0.9),
-    // Ear points
-    new Vector3(-1.55, 0.1, 0.1),
-    new Vector3(1.55, 0.1, 0.1),
-    // Crown / hairline
-    new Vector3(0, 1.55, 1.0),
-    new Vector3(-0.6, 1.48, 0.7),
-    new Vector3(0.6, 1.48, 0.7),
-];
-
-/* Neural connection pairs (landmark indices) */
-const CONNECTIONS = [
-    [0, 4], [0, 6], [1, 5], [1, 7],     // brow
-    [0, 2], [1, 3],                       // eye-pupil
-    [8, 9], [8, 10], [9, 12], [10, 11],  // nose
-    [11, 13], [12, 13], [11, 16], [12, 17], [13, 14], // mouth
-    [15, 16], [15, 17],                   // chin
-    [16, 22], [17, 23],                   // jaw-ear
-    [18, 0], [19, 1],                     // cheek-eye
-    [20, 4], [21, 5],                     // temple-brow
-    [24, 25], [24, 26],                   // crown
-    [4, 20], [5, 21],
-];
-
-/* ─────────────────────────────────────────────
-   MAIN FACE GROUP
-───────────────────────────────────────────── */
-function FaceHead() {
-    const groupRef = useRef<any>(null!);
-    const wireRef = useRef<Mesh>(null!);
-    const solidRef = useRef<Mesh>(null!);
-    const glowRef = useRef<Mesh>(null!);
+function VoxelFace() {
+    const groupRef = useRef<THREE.Group>(null!);
     const scroll = useRef(0);
-    const faceGeo = useMemo(buildFaceGeo, []);
+    const voxels = useMemo(generateVoxelPositions, []);
+
+    // Refs for individual animated voxels
+    const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
 
     useFrame((state) => {
-        const st = window.scrollY;
         const sh = document.documentElement.scrollHeight - window.innerHeight;
-        const target = sh > 0 ? st / sh : 0;
-        scroll.current = MathUtils.lerp(scroll.current, target, 0.06);
-
+        scroll.current = THREE.MathUtils.lerp(
+            scroll.current,
+            sh > 0 ? window.scrollY / sh : 0,
+            0.06
+        );
         const t = state.clock.getElapsedTime();
         const s = scroll.current;
 
-        const ry = Math.sin(t * 0.25) * 0.35 + s * 4;
-        const rx = Math.sin(t * 0.18) * 0.06 + s * 1.2;
-        const py = Math.sin(t * 0.4) * 0.12 - s * 2;
-
         if (groupRef.current) {
-            groupRef.current.rotation.y = ry;
-            groupRef.current.rotation.x = rx;
-            groupRef.current.position.y = py;
+            groupRef.current.rotation.y = Math.sin(t * 0.2) * 0.25 + s * 3;
+            groupRef.current.rotation.x = Math.sin(t * 0.15) * 0.05 + s * 0.8;
+            groupRef.current.position.y = Math.sin(t * 0.35) * 0.1 - s * 2;
         }
 
-        // Pulse glow
-        if (glowRef.current) {
-            const mat = glowRef.current.material as any;
-            mat.opacity = 0.04 + Math.sin(t * 1.2) * 0.02;
-        }
-    });
+        // Animate individual voxels — wave pulse
+        meshRefs.current.forEach((mesh, i) => {
+            if (!mesh) return;
+            const v = voxels[i];
+            const wave = Math.sin(t * 1.5 + v.pos[0] * 2 + v.pos[1] * 1.5) * 0.03;
+            mesh.position.z = v.pos[2] + wave;
 
-    return (
-        <group ref={groupRef}>
-            {/* Solid dark face — slight skin undertone */}
-            <mesh ref={solidRef} geometry={faceGeo}>
-                <meshStandardMaterial color="#050510" roughness={0.95} metalness={0.05} />
-            </mesh>
-
-            {/* Wireframe overlay — cyan/indigo */}
-            <mesh ref={wireRef} geometry={faceGeo}>
-                <meshStandardMaterial
-                    color="#38bdf8"
-                    wireframe
-                    transparent
-                    opacity={0.18}
-                    emissive="#6366f1"
-                    emissiveIntensity={1.2}
-                />
-            </mesh>
-
-            {/* Outer glow shell — slightly larger */}
-            <mesh ref={glowRef} geometry={faceGeo} scale={1.015}>
-                <meshStandardMaterial
-                    color="#818cf8"
-                    transparent
-                    opacity={0.06}
-                    side={2}
-                    emissive="#818cf8"
-                    emissiveIntensity={2}
-                />
-            </mesh>
-        </group>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   LANDMARK POINTS — glowing dots + labels
-───────────────────────────────────────────── */
-function LandmarkPoints() {
-    const groupRef = useRef<any>(null!);
-    const scroll = useRef(0);
-
-    useFrame((state) => {
-        const st = window.scrollY;
-        const sh = document.documentElement.scrollHeight - window.innerHeight;
-        const target = sh > 0 ? st / sh : 0;
-        scroll.current = MathUtils.lerp(scroll.current, target, 0.06);
-
-        const t = state.clock.getElapsedTime();
-        const s = scroll.current;
-        if (groupRef.current) {
-            groupRef.current.rotation.y = Math.sin(t * 0.25) * 0.35 + s * 4;
-            groupRef.current.rotation.x = Math.sin(t * 0.18) * 0.06 + s * 1.2;
-            groupRef.current.position.y = Math.sin(t * 0.4) * 0.12 - s * 2;
-        }
-    });
-
-    // Create neural-network connection tubes
-    const tubes = useMemo(() => {
-        return CONNECTIONS.map(([a, b], i) => {
-            const curve = new CatmullRomCurve3([
-                LANDMARKS[a].clone(),
-                new Vector3(
-                    (LANDMARKS[a].x + LANDMARKS[b].x) / 2 + (Math.random() - 0.5) * 0.05,
-                    (LANDMARKS[a].y + LANDMARKS[b].y) / 2 + (Math.random() - 0.5) * 0.05,
-                    (LANDMARKS[a].z + LANDMARKS[b].z) / 2,
-                ),
-                LANDMARKS[b].clone(),
-            ]);
-            return { geo: new TubeGeometry(curve, 8, 0.004, 4, false), key: i };
+            // Pulsing opacity for eyes
+            if (v.region === "eye") {
+                const mat = mesh.material as THREE.MeshBasicMaterial;
+                mat.opacity = 0.7 + Math.sin(t * 2.5 + i * 0.1) * 0.2;
+            }
         });
-    }, []);
+    });
 
     return (
         <group ref={groupRef}>
-            {/* Neural connection lines */}
-            {tubes.map(({ geo, key }) => (
-                <mesh key={key} geometry={geo}>
+            {voxels.map((v, i) => (
+                <mesh
+                    key={i}
+                    ref={(el) => { meshRefs.current[i] = el; }}
+                    position={v.pos}
+                >
+                    <boxGeometry args={[v.size, v.size, v.size * 1.2]} />
                     <meshBasicMaterial
-                        color="#38bdf8"
+                        color={v.color}
                         transparent
-                        opacity={0.35}
-                        blending={AdditiveBlending}
+                        opacity={v.region === "eye" ? 0.85 : 0.55}
+                        blending={THREE.AdditiveBlending}
                         depthWrite={false}
                     />
                 </mesh>
             ))}
-
-            {/* Landmark glowing dots */}
-            {LANDMARKS.map((pos, i) => (
-                <mesh key={i} position={pos}>
-                    <sphereGeometry args={[0.022, 8, 8]} />
-                    <meshBasicMaterial
-                        color={i < 4 ? "#f0abfc" : i < 8 ? "#a5f3fc" : "#818cf8"}
-                        transparent
-                        opacity={0.9}
-                        blending={AdditiveBlending}
-                    />
-                </mesh>
-            ))}
         </group>
     );
 }
 
 /* ─────────────────────────────────────────────
-   ORBITAL SCAN RINGS
+   SCAN RINGS — torus rings orbiting the face
 ───────────────────────────────────────────── */
 function ScanRings() {
-    const rings = useRef<(Mesh | null)[]>([]);
-
-    const ringConfigs = [
-        { rx: Math.PI / 2, ry: 0, rz: 0, speed: 0.4, radius: 2.3, color: "#38bdf8", opacity: 0.18 },
-        { rx: 0.3, ry: 0.6, rz: 0, speed: -0.3, radius: 2.5, color: "#818cf8", opacity: 0.12 },
-        { rx: 1.1, ry: 0.3, rz: 0.4, speed: 0.6, radius: 2.6, color: "#f0abfc", opacity: 0.08 },
-        { rx: Math.PI / 6, ry: 1.2, rz: 0.8, speed: -0.5, radius: 2.8, color: "#6366f1", opacity: 0.07 },
-    ];
-
+    const r1 = useRef<THREE.Mesh>(null!);
+    const r2 = useRef<THREE.Mesh>(null!);
+    const r3 = useRef<THREE.Mesh>(null!);
     const scroll = useRef(0);
 
     useFrame((state) => {
-        const st = window.scrollY;
         const sh = document.documentElement.scrollHeight - window.innerHeight;
-        const target = sh > 0 ? st / sh : 0;
-        scroll.current = MathUtils.lerp(scroll.current, target, 0.06);
-
+        scroll.current = THREE.MathUtils.lerp(scroll.current, sh > 0 ? window.scrollY / sh : 0, 0.06);
         const t = state.clock.getElapsedTime();
-        const s = scroll.current;
+        const py = Math.sin(t * 0.35) * 0.1 - scroll.current * 2;
 
-        rings.current.forEach((ring, i) => {
-            if (!ring) return;
-            const cfg = ringConfigs[i];
-            ring.rotation.y = cfg.ry + t * cfg.speed;
-            ring.rotation.x = cfg.rx;
-            ring.rotation.z = cfg.rz + t * cfg.speed * 0.3;
-            ring.position.y = Math.sin(t * 0.4) * 0.12 - s * 2;
-
-            const mat = ring.material as any;
-            mat.opacity = cfg.opacity * (0.7 + 0.3 * Math.sin(t * 1.5 + i));
-        });
+        if (r1.current) {
+            r1.current.rotation.y += 0.005;
+            r1.current.position.y = py;
+            (r1.current.material as THREE.MeshBasicMaterial).opacity = 0.15 + Math.sin(t * 1.2) * 0.05;
+        }
+        if (r2.current) {
+            r2.current.rotation.z += 0.004;
+            r2.current.rotation.x += 0.002;
+            r2.current.position.y = py;
+        }
+        if (r3.current) {
+            r3.current.rotation.y -= 0.006;
+            r3.current.rotation.z += 0.003;
+            r3.current.position.y = py;
+        }
     });
 
     return (
         <>
-            {ringConfigs.map((cfg, i) => (
-                <mesh
-                    key={i}
-                    ref={(el) => { rings.current[i] = el; }}
-                    rotation={[cfg.rx, cfg.ry, cfg.rz]}
-                >
-                    <torusGeometry args={[cfg.radius, 0.008, 2, 180]} />
-                    <meshBasicMaterial
-                        color={cfg.color}
-                        transparent
-                        opacity={cfg.opacity}
-                        blending={AdditiveBlending}
-                        depthWrite={false}
-                    />
-                </mesh>
-            ))}
+            <mesh ref={r1} rotation={[Math.PI / 2, 0, 0]}>
+                <torusGeometry args={[3.0, 0.008, 2, 200]} />
+                <meshBasicMaterial color="#22d3ee" transparent opacity={0.18} blending={THREE.AdditiveBlending} depthWrite={false} />
+            </mesh>
+            <mesh ref={r2} rotation={[0.5, 0.6, 0]}>
+                <torusGeometry args={[3.3, 0.006, 2, 200]} />
+                <meshBasicMaterial color="#818cf8" transparent opacity={0.12} blending={THREE.AdditiveBlending} depthWrite={false} />
+            </mesh>
+            <mesh ref={r3} rotation={[1.0, 0.2, 0.5]}>
+                <torusGeometry args={[3.5, 0.005, 2, 200]} />
+                <meshBasicMaterial color="#f0abfc" transparent opacity={0.08} blending={THREE.AdditiveBlending} depthWrite={false} />
+            </mesh>
         </>
     );
 }
 
 /* ─────────────────────────────────────────────
-   ANIMATED SCAN LINE (AI sweep)
+   HORIZONTAL SCAN BEAM
 ───────────────────────────────────────────── */
 function ScanBeam() {
-    const planeRef = useRef<Mesh>(null!);
+    const ref = useRef<THREE.Mesh>(null!);
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
-        if (planeRef.current) {
-            planeRef.current.position.y = Math.sin(t * 0.7) * 2.4;
-            const mat = planeRef.current.material as any;
-            mat.opacity = 0.25 + Math.sin(t * 4) * 0.1;
-        }
+        ref.current.position.y = Math.sin(t * 0.6) * 3.5;
+        (ref.current.material as THREE.MeshBasicMaterial).opacity = 0.18 + Math.sin(t * 3) * 0.07;
     });
 
     return (
-        <mesh ref={planeRef} rotation={[0, 0, 0]}>
-            <planeGeometry args={[6, 0.012]} />
-            <meshBasicMaterial
-                color="#38bdf8"
-                transparent
-                opacity={0.3}
-                blending={AdditiveBlending}
-                depthWrite={false}
-            />
+        <mesh ref={ref}>
+            <planeGeometry args={[8, 0.015]} />
+            <meshBasicMaterial color="#22d3ee" transparent opacity={0.2} blending={THREE.AdditiveBlending} depthWrite={false} />
         </mesh>
     );
 }
 
 /* ─────────────────────────────────────────────
-   FLOATING PARTICLES — neural data stream
+   FLOATING DATA PARTICLES
 ───────────────────────────────────────────── */
 function DataParticles() {
     const ref = useRef<any>(null!);
-    const count = 2000;
-
-    const { positions, phases } = useMemo(() => {
-        const pos = new Float32Array(count * 3);
-        const ph = new Float32Array(count);
-        for (let i = 0; i < count; i++) {
+    const positions = useMemo(() => {
+        const arr = new Float32Array(3000);
+        for (let i = 0; i < 1000; i++) {
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
-            const r = 2.8 + Math.random() * 3.0;
-            pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-            pos[i * 3 + 1] = r * Math.cos(phi) * 1.3;
-            pos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-            ph[i] = Math.random() * Math.PI * 2;
+            const r = 3.5 + Math.random() * 4.0;
+            arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+            arr[i * 3 + 1] = r * Math.cos(phi) * 1.2;
+            arr[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
         }
-        return { positions: pos, phases: ph };
+        return arr;
     }, []);
 
     useFrame((state) => {
-        if (ref.current) {
-            ref.current.rotation.y = state.clock.getElapsedTime() * 0.04;
-            ref.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.06) * 0.08;
-        }
+        ref.current.rotation.y = state.clock.getElapsedTime() * 0.03;
     });
 
     return (
@@ -393,49 +278,37 @@ function DataParticles() {
                 size={0.018}
                 sizeAttenuation
                 depthWrite={false}
-                blending={AdditiveBlending}
-                opacity={0.5}
+                blending={THREE.AdditiveBlending}
+                opacity={0.45}
             />
         </Points>
     );
 }
 
 /* ─────────────────────────────────────────────
-   ACCENT ORBS — 2 pulsing light orbs
+   ACCENT GLOWING ORBS
 ───────────────────────────────────────────── */
 function AccentOrbs() {
-    const orb1 = useRef<Mesh>(null!);
-    const orb2 = useRef<Mesh>(null!);
+    const o1 = useRef<THREE.Mesh>(null!);
+    const o2 = useRef<THREE.Mesh>(null!);
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
-        if (orb1.current) {
-            orb1.current.position.set(
-                Math.sin(t * 0.5) * 3.2,
-                Math.cos(t * 0.4) * 1.5,
-                Math.sin(t * 0.35) * 2
-            );
-            (orb1.current.material as any).opacity = 0.12 + Math.sin(t * 1.2) * 0.05;
-        }
-        if (orb2.current) {
-            orb2.current.position.set(
-                Math.cos(t * 0.4) * -3,
-                Math.sin(t * 0.6) * 2,
-                Math.cos(t * 0.45) * 1.5
-            );
-            (orb2.current.material as any).opacity = 0.1 + Math.sin(t * 0.9) * 0.04;
-        }
+        o1.current.position.set(Math.sin(t * 0.5) * 4, Math.cos(t * 0.4) * 2, Math.sin(t * 0.3) * 2);
+        o2.current.position.set(Math.cos(t * 0.35) * -3.5, Math.sin(t * 0.5) * 2.5, Math.cos(t * 0.4) * 1.5);
+        (o1.current.material as THREE.MeshBasicMaterial).opacity = 0.10 + Math.sin(t) * 0.04;
+        (o2.current.material as THREE.MeshBasicMaterial).opacity = 0.08 + Math.sin(t * 0.8) * 0.03;
     });
 
     return (
         <>
-            <mesh ref={orb1}>
-                <sphereGeometry args={[0.55, 16, 16]} />
-                <meshBasicMaterial color="#6366f1" transparent opacity={0.12} blending={AdditiveBlending} depthWrite={false} />
+            <mesh ref={o1}>
+                <sphereGeometry args={[0.6, 16, 16]} />
+                <meshBasicMaterial color="#6366f1" transparent opacity={0.10} blending={THREE.AdditiveBlending} depthWrite={false} />
             </mesh>
-            <mesh ref={orb2}>
+            <mesh ref={o2}>
                 <sphereGeometry args={[0.45, 16, 16]} />
-                <meshBasicMaterial color="#38bdf8" transparent opacity={0.1} blending={AdditiveBlending} depthWrite={false} />
+                <meshBasicMaterial color="#22d3ee" transparent opacity={0.08} blending={THREE.AdditiveBlending} depthWrite={false} />
             </mesh>
         </>
     );
@@ -446,15 +319,15 @@ function AccentOrbs() {
 ───────────────────────────────────────────── */
 function Rig() {
     const { camera } = useThree();
-    const vec = useMemo(() => new Vector3(), []);
+    const target = useMemo(() => new THREE.Vector3(), []);
 
-    return useFrame((state) => {
-        camera.position.lerp(
-            vec.set(state.pointer.x * 0.6, state.pointer.y * 0.4, 8),
-            0.035
-        );
+    useFrame((state) => {
+        target.set(state.pointer.x * 0.8, state.pointer.y * 0.5, 9);
+        camera.position.lerp(target, 0.03);
         camera.lookAt(0, 0, 0);
     });
+
+    return null;
 }
 
 /* ─────────────────────────────────────────────
@@ -473,22 +346,17 @@ export default function HeroScene() {
                     depth: true,
                 }}
                 performance={{ min: 0.5 }}
-                frameloop="always"
             >
                 <Suspense fallback={null}>
-                    <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={48} />
+                    <PerspectiveCamera makeDefault position={[0, 0, 9]} fov={50} />
 
-                    {/* Lighting */}
+                    {/* Minimal lighting — voxels use MeshBasicMaterial */}
                     <ambientLight intensity={0.05} />
-                    <directionalLight position={[2, 4, 5]} intensity={0.6} color="#c7d2fe" />
-                    <pointLight position={[-5, -2, -4]} color="#4f46e5" intensity={2.5} />
-                    <pointLight position={[5, 2, 3]} color="#0ea5e9" intensity={1.8} />
-                    <pointLight position={[0, -4, 2]} color="#818cf8" intensity={1.0} />
-                    <spotLight position={[0, 8, 4]} angle={0.4} penumbra={1} intensity={1.5} color="#e0f2fe" />
+                    <pointLight position={[-4, -2, -3]} color="#4f46e5" intensity={2.0} />
+                    <pointLight position={[4, 2, 3]} color="#0ea5e9" intensity={1.5} />
 
-                    {/* 3D Face */}
-                    <FaceHead />
-                    <LandmarkPoints />
+                    {/* Pixel Face */}
+                    <VoxelFace />
 
                     {/* Scanner FX */}
                     <ScanBeam />
@@ -501,16 +369,11 @@ export default function HeroScene() {
 
                     {/* Post-processing */}
                     <EffectComposer multisampling={0}>
-                        <Bloom
-                            luminanceThreshold={0.6}
-                            mipmapBlur
-                            intensity={2.0}
-                            radius={0.55}
-                        />
-                        <Vignette eskil={false} offset={0.12} darkness={1.2} />
+                        <Bloom luminanceThreshold={0.4} mipmapBlur intensity={2.5} radius={0.6} />
+                        <Vignette eskil={false} offset={0.1} darkness={1.3} />
                     </EffectComposer>
 
-                    <fog attach="fog" args={["#030303", 5, 22]} />
+                    <fog attach="fog" args={["#030303", 6, 24]} />
                 </Suspense>
             </Canvas>
         </div>
