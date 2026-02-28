@@ -189,7 +189,7 @@ export default function ProgressTracker({ history }: ProgressTrackerProps) {
                 </div>
                 <div className="text-center">
                     <p className={`text-2xl font-bold ${trend.color}`}>
-                        {trend.label === "Improving" ? "↓" : trend.label === "Getting Worse" ? "↑" : "—"}
+                        {trend.label === "Improving" ? "↓" : trend.label === "Getting Worse" ? "↑" : "-"}
                     </p>
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Trend</p>
                 </div>

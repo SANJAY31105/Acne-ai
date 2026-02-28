@@ -34,7 +34,7 @@ const QUESTIONS = [
         options: [
             { label: "Large and visible (especially nose/cheeks)", value: "large" },
             { label: "Small and barely visible", value: "small" },
-            { label: "Mixed — large on nose, small elsewhere", value: "mixed" },
+            { label: "Mixed - large on nose, small elsewhere", value: "mixed" },
         ],
     },
     {
@@ -42,9 +42,9 @@ const QUESTIONS = [
         question: "How often do you get breakouts?",
         icon: Zap,
         options: [
-            { label: "Constantly — new pimples every week", value: "frequent" },
-            { label: "Sometimes — around period or stress", value: "occasional" },
-            { label: "Rarely — once every few months", value: "rare" },
+            { label: "Constantly - new pimples every week", value: "frequent" },
+            { label: "Sometimes - around period or stress", value: "occasional" },
+            { label: "Rarely - once every few months", value: "rare" },
         ],
     },
     {
@@ -80,7 +80,7 @@ function determineSkinType(answers: Record<string, string>): { type: string; des
     if (comboSignals) {
         return { type: "Combination", description: "Your skin is oily in some areas and dry in others. You may need different products for different zones." };
     }
-    return { type: "Normal", description: "Your skin is well-balanced — not too oily or too dry. Lucky you! Focus on maintenance." };
+    return { type: "Normal", description: "Your skin is well-balanced - not too oily or too dry. Lucky you! Focus on maintenance." };
 }
 
 export default function SkinQuizPage() {
@@ -96,7 +96,7 @@ export default function SkinQuizPage() {
         if (currentQ < QUESTIONS.length - 1) {
             setTimeout(() => setCurrentQ(currentQ + 1), 300);
         } else {
-            // All done — determine skin type
+            // All done - determine skin type
             const skinType = determineSkinType(newAnswers);
             setResult(skinType);
             // Save to localStorage for use in analysis
@@ -111,7 +111,7 @@ export default function SkinQuizPage() {
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-6 font-sans">
             <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-10">
-                Acne AI — Skin Type Quiz
+                Acne AI - Skin Type Quiz
             </Link>
 
             {/* Progress Bar */}

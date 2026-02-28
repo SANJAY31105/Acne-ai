@@ -112,7 +112,7 @@ export default function Home() {
             transition={{ delay: 1.0, duration: 1 }}
             className="mt-8 text-base md:text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed"
           >
-            Snap a photo. Get an instant AI diagnosis. Receive a personalized skincare routine — all in seconds.
+            Snap a photo. Get an instant AI diagnosis. Receive a personalized skincare routine - all in seconds.
           </motion.p>
 
           <motion.div
@@ -252,7 +252,7 @@ export default function Home() {
 
       {/* ─── FOOTER ─── */}
       <footer className="w-full text-center py-12 border-t border-white/5 bg-[#060a14]">
-        <p className="text-[10px] font-bold tracking-[0.8em] uppercase text-zinc-700">ACNE AI — 2026</p>
+        <p className="text-[10px] font-bold tracking-[0.8em] uppercase text-zinc-700">ACNE AI - 2026</p>
       </footer>
     </div>
   );

@@ -5,7 +5,7 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap",          // Prevents FOIT — shows fallback font instantly
+  display: "swap",          // Prevents FOIT - shows fallback font instantly
   preload: true,            // Preloads critical font files
 });
 
@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Acne AI — Clear Skin Starts Here",
+  title: "Acne AI - Clear Skin Starts Here",
   description: "AI-powered acne severity analysis. Snap a photo, get an instant diagnosis, and receive a personalized skincare routine.",
   keywords: ["acne", "skin analysis", "AI", "skincare", "deep learning", "acne severity"],
   openGraph: {
-    title: "Acne AI — Clear Skin Starts Here",
+    title: "Acne AI - Clear Skin Starts Here",
     description: "AI-powered acne severity analysis. Snap a photo, get an instant diagnosis.",
     type: "website",
   },
