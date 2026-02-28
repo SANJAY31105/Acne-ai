@@ -61,3 +61,4 @@ js/public/models/
 temp_*
 *.tmp
 .vercel
+.env*.local

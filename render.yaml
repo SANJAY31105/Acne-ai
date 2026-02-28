@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: acne-ai-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.backend
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.10"
+    healthCheckPath: /health
