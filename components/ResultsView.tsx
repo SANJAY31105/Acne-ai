@@ -56,7 +56,7 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
 
         const severityColors: Record<string, string> = { Mild: "#34d399", Moderate: "#fbbf24", Severe: "#f87171" };
         const sColor = severityColors[severity] || "#a1a1aa";
-        const confPct = Math.round(confidence * 100);
+        const confPct = Math.round(confidence);
 
         const morningSteps = (recommendations?.morning_routine || []).map((s: string, i: number) => `<div style="padding:6px 0;font-size:12px;color:#d4d4d8;border-bottom:1px solid rgba(255,255,255,0.05)"><span style="color:${sColor};font-weight:700">${i + 1}.</span> ${s}</div>`).join("");
         const nightSteps = (recommendations?.night_routine || []).map((s: string, i: number) => `<div style="padding:6px 0;font-size:12px;color:#d4d4d8;border-bottom:1px solid rgba(255,255,255,0.05)"><span style="color:${sColor};font-weight:700">${i + 1}.</span> ${s}</div>`).join("");
