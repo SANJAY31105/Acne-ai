@@ -1,0 +1,8 @@
+# Python ML backend (deployed separately)
+acne_ai_project/
+prepare_kaggle_data.py
+
+# Development files
+.git/
+.gemini/
+*.md

@@ -60,3 +60,4 @@ js/public/models/
 # Temp
 temp_*
 *.tmp
+.vercel
