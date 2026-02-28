@@ -44,37 +44,86 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
     const [shareMsg, setShareMsg] = useState<string | null>(null);
 
     const handleShare = async () => {
-        const morningSteps = (recommendations?.morning_routine || []).map((s: string, i: number) => `  ${i + 1}. ${s}`).join("\n");
-        const nightSteps = (recommendations?.night_routine || []).map((s: string, i: number) => `  ${i + 1}. ${s}`).join("\n");
-        const dos = (recommendations?.dos || []).map((s: string) => `  + ${s}`).join("\n");
-        const donts = (recommendations?.donts || []).map((s: string) => `  - ${s}`).join("\n");
+        setShareMsg("Generating...");
 
-        const report = [
-            `ACNE AI - Skin Analysis Report`,
-            `================================`,
-            `Severity: ${severity} (${Math.round(confidence * 100)}% confidence)`,
-            `Type: ${primary_diagnosis?.type || "N/A"}`,
-            `Skin Type: ${skin_type || "N/A"}`,
-            recommendations?.timeline ? `Expected Results: ${recommendations.timeline}` : null,
-            ``,
-            morningSteps ? `Morning Routine:\n${morningSteps}` : null,
-            nightSteps ? `Night Routine:\n${nightSteps}` : null,
-            dos ? `\nDo's:\n${dos}` : null,
-            donts ? `\nDon'ts:\n${donts}` : null,
-            ``,
-            `Analyzed by Acne AI - acne-ai-doc.vercel.app`,
-        ].filter(Boolean).join("\n");
+        // Build a styled report card in a hidden div
+        const card = document.createElement("div");
+        card.style.cssText = `
+            width:420px; padding:32px; background:linear-gradient(135deg,#0a0e1a 0%,#111827 100%);
+            color:white; font-family:system-ui,-apple-system,sans-serif; border-radius:24px;
+            position:fixed; left:-9999px; top:0; z-index:-1;
+        `;
 
-        if (navigator.share) {
-            try {
-                await navigator.share({ title: "Acne AI - My Skin Report", text: report });
+        const severityColors: Record<string, string> = { Mild: "#34d399", Moderate: "#fbbf24", Severe: "#f87171" };
+        const sColor = severityColors[severity] || "#a1a1aa";
+        const confPct = Math.round(confidence * 100);
+
+        const morningSteps = (recommendations?.morning_routine || []).map((s: string, i: number) => `<div style="padding:6px 0;font-size:12px;color:#d4d4d8;border-bottom:1px solid rgba(255,255,255,0.05)"><span style="color:${sColor};font-weight:700">${i + 1}.</span> ${s}</div>`).join("");
+        const nightSteps = (recommendations?.night_routine || []).map((s: string, i: number) => `<div style="padding:6px 0;font-size:12px;color:#d4d4d8;border-bottom:1px solid rgba(255,255,255,0.05)"><span style="color:${sColor};font-weight:700">${i + 1}.</span> ${s}</div>`).join("");
+        const dosList = (recommendations?.dos || []).map((s: string) => `<div style="padding:3px 0;font-size:11px;color:#86efac">+ ${s}</div>`).join("");
+        const dontsList = (recommendations?.donts || []).map((s: string) => `<div style="padding:3px 0;font-size:11px;color:#fca5a5">- ${s}</div>`).join("");
+
+        card.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                <div style="font-size:18px;font-weight:900;letter-spacing:0.15em">ACNE AI</div>
+                <div style="font-size:10px;color:#71717a;letter-spacing:0.1em">SKIN ANALYSIS REPORT</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:16px">
+                    <div style="width:64px;height:64px;border-radius:50%;border:3px solid ${sColor};display:flex;align-items:center;justify-content:center;flex-direction:column">
+                        <div style="font-size:20px;font-weight:900;color:${sColor}">${confPct}%</div>
+                    </div>
+                    <div>
+                        <div style="font-size:22px;font-weight:900;margin-bottom:4px">${severity} Acne</div>
+                        <div style="font-size:12px;color:#a1a1aa">${primary_diagnosis?.type || ""}</div>
+                        <div style="font-size:11px;color:#71717a;margin-top:2px">Skin Type: ${skin_type || "N/A"}</div>
+                    </div>
+                </div>
+                ${recommendations?.timeline ? `<div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:11px;color:#a1a1aa">Expected results: <strong style="color:#e5e5e5">${recommendations.timeline}</strong></div>` : ""}
+            </div>
+            ${morningSteps ? `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;margin-bottom:6px">MORNING ROUTINE</div>${morningSteps}</div>` : ""}
+            ${nightSteps ? `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#818cf8;letter-spacing:0.1em;margin-bottom:6px">NIGHT ROUTINE</div>${nightSteps}</div>` : ""}
+            ${dosList || dontsList ? `
+                <div style="display:flex;gap:8px;margin-bottom:16px">
+                    ${dosList ? `<div style="flex:1;padding:10px;background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.1);border-radius:10px"><div style="font-size:10px;font-weight:700;color:#22c55e;margin-bottom:4px">DO'S</div>${dosList}</div>` : ""}
+                    ${dontsList ? `<div style="flex:1;padding:10px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.1);border-radius:10px"><div style="font-size:10px;font-weight:700;color:#ef4444;margin-bottom:4px">DON'TS</div>${dontsList}</div>` : ""}
+                </div>
+            ` : ""}
+            <div style="text-align:center;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
+                <div style="font-size:9px;color:#52525b;letter-spacing:0.15em">ANALYZED BY ACNE AI - acne-ai-doc.vercel.app</div>
+            </div>
+        `;
+
+        document.body.appendChild(card);
+
+        try {
+            const { default: html2canvas } = await import("html2canvas-pro");
+            const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
+            document.body.removeChild(card);
+
+            const blob = await new Promise<Blob>((resolve) =>
+                canvas.toBlob((b) => resolve(b!), "image/png")
+            );
+            const file = new File([blob], "acne-ai-report.png", { type: "image/png" });
+
+            if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                await navigator.share({ title: "Acne AI Report", files: [file] });
                 setShareMsg("Shared!");
-            } catch { /* user cancelled */ return; }
-        } else {
-            await navigator.clipboard.writeText(report);
-            setShareMsg("Copied to clipboard!");
+            } else {
+                // Download fallback
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "acne-ai-report.png";
+                a.click();
+                URL.revokeObjectURL(url);
+                setShareMsg("Downloaded!");
+            }
+        } catch {
+            document.body.removeChild(card);
+            setShareMsg("Error");
         }
-        setTimeout(() => setShareMsg(null), 2000);
+        setTimeout(() => setShareMsg(null), 2500);
     };
 
     const severityColor: Record<string, string> = {
