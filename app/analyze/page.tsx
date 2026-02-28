@@ -148,7 +148,7 @@ export default function AnalyzePage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#030303] text-white p-6 md:p-12 font-sans antialiased selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-[#060a14] text-white p-6 md:p-12 font-sans antialiased selection:bg-indigo-500/30">
             <header className="mb-8 flex justify-between items-center max-w-5xl mx-auto">
                 <Link href="/" className="text-xl md:text-2xl font-black tracking-[0.3em] uppercase text-white hover:text-indigo-400 transition-all duration-500">
                     ACNE AI
