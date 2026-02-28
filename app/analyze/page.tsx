@@ -2,12 +2,32 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
-import { Upload, Camera, Loader2, RefreshCw, LogOut } from "lucide-react";
+import { Upload, Camera, RefreshCw, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import ResultsView from "@/components/ResultsView";
 
+const scanMessages = [
+    "Detecting skin regions...",
+    "Mapping acne zones...",
+    "Classifying severity...",
+    "Analyzing inflammation...",
+    "Building your routine...",
+];
+
+function ScanStatusText() {
+    const [idx, setIdx] = useState(0);
+    useEffect(() => {
+        const timer = setInterval(() => setIdx((i) => (i + 1) % scanMessages.length), 2000);
+        return () => clearInterval(timer);
+    }, []);
+    return (
+        <p className="text-sm font-semibold text-emerald-300 tracking-wider animate-pulse">
+            {scanMessages[idx]}
+        </p>
+    );
+}
 export default function AnalyzePage() {
     const webcamRef = useRef<Webcam>(null);
     const [image, setImage] = useState<string | null>(null);
@@ -176,12 +196,33 @@ export default function AnalyzePage() {
                                         fill
                                         className="object-cover"
                                     />
-                                    <button
-                                        onClick={reset}
-                                        className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md rounded-full hover:bg-black/70 transition-colors"
-                                    >
-                                        <RefreshCw className="w-5 h-5" />
-                                    </button>
+                                    {/* ─── Scanning Overlay ─── */}
+                                    {analyzing && (
+                                        <div className="absolute inset-0 z-10">
+                                            {/* Dark overlay */}
+                                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+                                            {/* Scan line */}
+                                            <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_rgba(52,211,153,0.6)] animate-[scanLine_2.5s_ease-in-out_infinite]" />
+                                            {/* Corner brackets */}
+                                            <div className="absolute top-6 left-6 w-10 h-10 border-t-2 border-l-2 border-emerald-400/80 rounded-tl-md animate-pulse" />
+                                            <div className="absolute top-6 right-6 w-10 h-10 border-t-2 border-r-2 border-emerald-400/80 rounded-tr-md animate-pulse" />
+                                            <div className="absolute bottom-6 left-6 w-10 h-10 border-b-2 border-l-2 border-emerald-400/80 rounded-bl-md animate-pulse" />
+                                            <div className="absolute bottom-6 right-6 w-10 h-10 border-b-2 border-r-2 border-emerald-400/80 rounded-br-md animate-pulse" />
+                                            {/* Center info */}
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                                                <div className="w-16 h-16 rounded-full border-2 border-emerald-400/40 border-t-emerald-400 animate-spin" />
+                                                <ScanStatusText />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!analyzing && (
+                                        <button
+                                            onClick={reset}
+                                            className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md rounded-full hover:bg-black/70 transition-colors z-20"
+                                        >
+                                            <RefreshCw className="w-5 h-5" />
+                                        </button>
+                                    )}
                                 </div>
                             ) : isCapturing ? (
                                 <div className="relative w-full h-full bg-black">
@@ -192,9 +233,14 @@ export default function AnalyzePage() {
                                         className="w-full h-full object-cover"
                                         videoConstraints={{ facingMode: "user" }}
                                     />
+                                    {/* Face guide overlay */}
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <div className="w-48 h-64 border-2 border-white/20 rounded-[50%] animate-pulse" />
+                                    </div>
+                                    <p className="absolute top-4 left-0 right-0 text-center text-xs text-white/50 font-medium tracking-wider">POSITION YOUR FACE IN THE OVAL</p>
                                     <button
                                         onClick={capture}
-                                        className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full border-4 border-white bg-transparent hover:bg-white/20 transition-all"
+                                        className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full border-4 border-white bg-transparent hover:bg-white/20 transition-all active:scale-90"
                                     />
                                 </div>
                             ) : (
@@ -221,20 +267,12 @@ export default function AnalyzePage() {
                             )}
                         </div>
 
-                        {image && (
+                        {image && !analyzing && (
                             <button
                                 onClick={analyzeImage}
-                                disabled={analyzing}
-                                className="w-full max-w-md py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full max-w-md py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-black rounded-full font-bold text-lg hover:from-emerald-400 hover:to-cyan-400 transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
                             >
-                                {analyzing ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        Analyzing...
-                                    </>
-                                ) : (
-                                    "Analyze Skin"
-                                )}
+                                Analyze Skin
                             </button>
                         )}
 

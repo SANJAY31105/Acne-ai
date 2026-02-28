@@ -138,3 +138,16 @@ html {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
+
+/* AI Scan line animation */
+@keyframes scanLine {
+
+  0%,
+  100% {
+    top: 8%;
+  }
+
+  50% {
+    top: 88%;
+  }
+}
