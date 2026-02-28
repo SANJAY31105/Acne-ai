@@ -41,6 +41,41 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
     const confidence = primary_diagnosis?.confidence || 0;
     const [expandedType, setExpandedType] = useState<string | null>(null);
     const [routineTab, setRoutineTab] = useState<"morning" | "night">("morning");
+    const [shareMsg, setShareMsg] = useState<string | null>(null);
+
+    const handleShare = async () => {
+        const morningSteps = (recommendations?.morning_routine || []).map((s: string, i: number) => `  ${i + 1}. ${s}`).join("\n");
+        const nightSteps = (recommendations?.night_routine || []).map((s: string, i: number) => `  ${i + 1}. ${s}`).join("\n");
+        const dos = (recommendations?.dos || []).map((s: string) => `  + ${s}`).join("\n");
+        const donts = (recommendations?.donts || []).map((s: string) => `  - ${s}`).join("\n");
+
+        const report = [
+            `ACNE AI - Skin Analysis Report`,
+            `================================`,
+            `Severity: ${severity} (${Math.round(confidence * 100)}% confidence)`,
+            `Type: ${primary_diagnosis?.type || "N/A"}`,
+            `Skin Type: ${skin_type || "N/A"}`,
+            recommendations?.timeline ? `Expected Results: ${recommendations.timeline}` : null,
+            ``,
+            morningSteps ? `Morning Routine:\n${morningSteps}` : null,
+            nightSteps ? `Night Routine:\n${nightSteps}` : null,
+            dos ? `\nDo's:\n${dos}` : null,
+            donts ? `\nDon'ts:\n${donts}` : null,
+            ``,
+            `Analyzed by Acne AI - acne-ai-doc.vercel.app`,
+        ].filter(Boolean).join("\n");
+
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: "Acne AI - My Skin Report", text: report });
+                setShareMsg("Shared!");
+            } catch { /* user cancelled */ return; }
+        } else {
+            await navigator.clipboard.writeText(report);
+            setShareMsg("Copied to clipboard!");
+        }
+        setTimeout(() => setShareMsg(null), 2000);
+    };
 
     const severityColor: Record<string, string> = {
         Mild: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",
@@ -350,8 +385,12 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
                             <RefreshCw className="w-5 h-5" />
                             Analyze New Photo
                         </button>
-                        <button className="px-6 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 border border-white/5 hover:border-white/15 hover:scale-[1.01]">
+                        <button
+                            onClick={handleShare}
+                            className="px-6 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 border border-white/5 hover:border-white/15 hover:scale-[1.01] flex items-center gap-2"
+                        >
                             <Share2 className="w-5 h-5" />
+                            {shareMsg || "Share"}
                         </button>
                     </div>
                 </div>
