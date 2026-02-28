@@ -1,6 +1,6 @@
 "use client";
 
-import { Share2, RefreshCw, AlertCircle, CheckCircle2, ChevronDown, Stethoscope, ShieldAlert, Heart, Sun, Moon, ShoppingBag, ThumbsUp, ThumbsDown, Clock, FlaskConical, Pill } from "lucide-react";
+import { Share2, RefreshCw, AlertCircle, CheckCircle2, ChevronDown, Stethoscope, ShieldAlert, Heart, Sun, Moon, ShoppingBag, ThumbsUp, ThumbsDown, Clock, FlaskConical, Pill, Download } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import SeverityGauge from "./SeverityGauge";
@@ -152,7 +152,7 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
     const currentRoutine = routineTab === "morning" ? morningRoutine : nightRoutine;
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div id="results-view" className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
                 {/* ─── Left Column: Image + Gauge ─── */}
                 <div className="space-y-6">
@@ -432,14 +432,31 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
                             className="flex-1 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-2 border border-white/5 hover:border-white/15 hover:scale-[1.01]"
                         >
                             <RefreshCw className="w-5 h-5" />
-                            Analyze New Photo
+                            New Photo
                         </button>
                         <button
                             onClick={handleShare}
-                            className="px-6 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 border border-white/5 hover:border-white/15 hover:scale-[1.01] flex items-center gap-2"
+                            className="px-5 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 border border-white/5 hover:border-white/15 hover:scale-[1.01] flex items-center gap-2"
                         >
                             <Share2 className="w-5 h-5" />
                             {shareMsg || "Share"}
+                        </button>
+                        <button
+                            onClick={async () => {
+                                const { default: html2canvas } = await import("html2canvas-pro");
+                                const el = document.getElementById("results-view");
+                                if (!el) return;
+                                const canvas = await html2canvas(el, { backgroundColor: "#030303", scale: 2 });
+                                const url = canvas.toDataURL("image/png");
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = `acne-ai-report-${new Date().toISOString().slice(0, 10)}.png`;
+                                a.click();
+                            }}
+                            className="px-5 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 border border-white/5 hover:border-white/15 hover:scale-[1.01] flex items-center gap-2"
+                        >
+                            <Download className="w-5 h-5" />
+                            PDF
                         </button>
                     </div>
                 </div>
