@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ACNE AI — Complete Project Overview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; color: #1a1a2e; line-height: 1.7; padding: 40px 60px; max-width: 900px; margin: 0 auto; background: #fff; }
+  @media print {
+    body { padding: 20px 30px; font-size: 11px; line-height: 1.5; }
+    .page-break { page-break-before: always; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 16px; }
+    h3 { font-size: 13px; }
+    table { font-size: 10px; }
+    pre { font-size: 9px; }
+  }
+  h1 { font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+  .subtitle { font-size: 15px; color: #64748b; margin-bottom: 30px; font-style: italic; }
+  h2 { font-size: 22px; font-weight: 700; color: #0f172a; margin-top: 36px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #10b981; }
+  h3 { font-size: 16px; font-weight: 600; color: #334155; margin-top: 20px; margin-bottom: 10px; }
+  p { margin-bottom: 12px; color: #334155; }
+  hr { border: none; border-top: 1px solid #e2e8f0; margin: 24px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: #0f172a; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 8px 14px; border-bottom: 1px solid #e2e8f0; }
+  tr:nth-child(even) { background: #f8fafc; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #e11d48; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 16px 20px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.5; margin: 12px 0; }
+  pre code { background: none; color: #e2e8f0; padding: 0; }
+  ul, ol { margin: 8px 0 16px 24px; }
+  li { margin-bottom: 4px; color: #334155; }
+  blockquote { border-left: 4px solid #10b981; padding: 12px 16px; background: #f0fdf4; margin: 12px 0; border-radius: 0 6px 6px 0; }
+  blockquote p { color: #166534; margin: 0; }
+  .badge { display: inline-block; background: #10b981; color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; }
+  .metric-card .value { font-size: 28px; font-weight: 800; color: #10b981; }
+  .metric-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
+  .flow-diagram { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin: 16px 0; }
+  .flow-step { display: inline-block; background: #0f172a; color: #fff; padding: 8px 14px; border-radius: 6px; margin: 4px; font-size: 12px; font-weight: 500; }
+  .flow-arrow { display: inline-block; color: #10b981; font-size: 18px; margin: 0 2px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h1>🧬 ACNE AI</h1>
+<p class="subtitle">An AI-powered acne severity analysis platform that uses deep learning to classify skin conditions and provide personalized skincare recommendations.</p>
+
+<hr>
+
+<h2>🏗️ What We Built (From Scratch)</h2>
+
+<h3>The Problem</h3>
+<p>People struggle to objectively assess their acne severity and don't know what products or routines are right for their skin type. Dermatologist visits are expensive and inaccessible for many.</p>
+
+<h3>The Solution</h3>
+<p>A web application where users:</p>
+<ol>
+  <li>Upload or capture a photo of their face</li>
+  <li>Get an <strong>instant AI-powered severity diagnosis</strong> (Mild / Moderate / Severe)</li>
+  <li>Receive a <strong>personalized skincare plan</strong> including morning/night routines, product recommendations, do's/don'ts, and treatment timelines — all tailored to their skin type</li>
+</ol>
+
+<hr>
+
+<h2>🔧 Tech Stack</h2>
+
+<h3>Frontend</h3>
+<table>
+  <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+  <tr><td><strong>Next.js</strong></td><td>16.1.6</td><td>React framework (App Router, SSR, Turbopack)</td></tr>
+  <tr><td><strong>React</strong></td><td>19.2.3</td><td>UI library</td></tr>
+  <tr><td><strong>TypeScript</strong></td><td>5.x</td><td>Type safety</td></tr>
+  <tr><td><strong>TailwindCSS</strong></td><td>4.x</td><td>Utility-first styling</td></tr>
+  <tr><td><strong>Framer Motion</strong></td><td>12.x</td><td>Animations &amp; transitions</td></tr>
+  <tr><td><strong>Three.js + R3F</strong></td><td>0.183</td><td>3D hero scene on landing page</td></tr>
+  <tr><td><strong>Recharts</strong></td><td>3.7</td><td>Data visualization charts</td></tr>
+  <tr><td><strong>react-webcam</strong></td><td>7.2</td><td>Camera capture for scanning</td></tr>
+  <tr><td><strong>react-dropzone</strong></td><td>15.0</td><td>Drag-and-drop image upload</td></tr>
+  <tr><td><strong>html2canvas-pro</strong></td><td>2.0</td><td>PDF/image report downloads</td></tr>
+</table>
+
+<h3>Backend (Python)</h3>
+<table>
+  <tr><th>Technology</th><th>Purpose</th></tr>
+  <tr><td><strong>Flask + Flask-CORS</strong></td><td>REST API server</td></tr>
+  <tr><td><strong>Keras 3 (PyTorch backend)</strong></td><td>Deep learning model loading &amp; inference</td></tr>
+  <tr><td><strong>PyTorch 2.6 + CUDA 12.4</strong></td><td>GPU-accelerated training &amp; inference</td></tr>
+  <tr><td><strong>TensorFlow</strong></td><td>Data pipeline (tf.data.Dataset) for fast training</td></tr>
+  <tr><td><strong>EfficientNetB3</strong></td><td>CNN backbone (ImageNet pre-trained)</td></tr>
+  <tr><td><strong>MediaPipe</strong></td><td>Face detection (reject non-face images)</td></tr>
+  <tr><td><strong>OpenCV</strong></td><td>Image processing &amp; preprocessing</td></tr>
+  <tr><td><strong>scikit-learn</strong></td><td>Class weighting, metrics, evaluation</td></tr>
+  <tr><td><strong>Ultralytics (YOLOv8)</strong></td><td>Object detection component</td></tr>
+</table>
+
+<h3>Deployment</h3>
+<table>
+  <tr><th>Service</th><th>Purpose</th></tr>
+  <tr><td><strong>Vercel</strong></td><td>Frontend hosting (auto-deploys from GitHub)</td></tr>
+  <tr><td><strong>Render</strong></td><td>Backend API hosting (Docker container)</td></tr>
+  <tr><td><strong>Docker</strong></td><td>Containerized backend for reproducibility</td></tr>
+</table>
+
+<hr>
+
+<div class="page-break"></div>
+
+<h2>🧠 AI / ML Pipeline — How It Works</h2>
+
+<div class="flow-diagram" style="text-align:center;">
+  <span class="flow-step">📸 User uploads photo</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">🔍 Face Detection (MediaPipe)</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">✂️ Crop Face Region</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">🧠 Severity Classifier (EfficientNetB3)</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">📊 Confidence Scoring</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">💊 Personalized Recommendations</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">📋 Full Report</span>
+</div>
+
+<h3>Step-by-Step</h3>
+<ol>
+  <li><strong>Image Input</strong> — User uploads a photo or captures one via webcam</li>
+  <li><strong>Face Detection</strong> — MediaPipe detects and crops the face region. Non-face images are rejected</li>
+  <li><strong>Preprocessing</strong> — Face is resized to 300×300 pixels for the CNN</li>
+  <li><strong>Severity Classification</strong> — EfficientNetB3 classifies into 3 classes:
+    <ul>
+      <li><strong>Mild</strong> — Blackheads, whiteheads (comedonal acne)</li>
+      <li><strong>Moderate</strong> — Papules, pustules (inflammatory acne)</li>
+      <li><strong>Severe</strong> — Cysts, nodules (nodulocystic acne)</li>
+    </ul>
+  </li>
+  <li><strong>Confidence Check</strong> — If confidence &lt; 40%, result is marked "Inconclusive"</li>
+  <li><strong>Recommendations Engine</strong> — Based on severity + user's skin type, generates personalized routines, product recs, timelines</li>
+</ol>
+
+<hr>
+
+<h2>📊 Model Training Details</h2>
+
+<h3>Model Architecture</h3>
+<pre><code>EfficientNetB3 (ImageNet pre-trained)
+├── Data Augmentation (RandomFlip, RandomRotation, RandomZoom, RandomContrast)
+├── EfficientNetB3 Backbone (frozen → fine-tuned)
+├── GlobalAveragePooling2D
+├── BatchNormalization + Dropout (0.4)
+├── Dense(512, ReLU) + BatchNorm + Dropout (0.3)
+├── Dense(256, ReLU) + BatchNorm + Dropout (0.2)
+└── Dense(3, Softmax) → [Mild, Moderate, Severe]</code></pre>
+
+<h3>Training Strategy (2-Phase Transfer Learning)</h3>
+<table>
+  <tr><th>Phase</th><th>What Happens</th><th>Epochs</th><th>Learning Rate</th></tr>
+  <tr><td><strong>Phase 1: Feature Extraction</strong></td><td>Backbone frozen, only head trains</td><td>15</td><td>1e-6 → 1e-3 (cosine warmup)</td></tr>
+  <tr><td><strong>Phase 2: Fine-Tuning</strong></td><td>Top 50% of backbone unfrozen</td><td>Up to 60</td><td>1e-7 → 3e-5 (cosine annealing)</td></tr>
+</table>
+
+<h3>Training Techniques</h3>
+<ul>
+  <li><strong>Transfer Learning</strong> — Pre-trained EfficientNetB3 (ImageNet weights)</li>
+  <li><strong>Cosine Annealing with Warmup</strong> — Custom LR scheduler</li>
+  <li><strong>Label Smoothing (0.1)</strong> — Prevents overconfident predictions</li>
+  <li><strong>Class Weighting</strong> — Balanced weights for imbalanced severity classes</li>
+  <li><strong>Early Stopping</strong> — Stops when validation loss plateaus (patience: 15)</li>
+  <li><strong>Data Augmentation</strong> — Random flips, rotations, zoom, contrast</li>
+  <li><strong>tf.data.Dataset</strong> — Fast multi-threaded data loading with AUTOTUNE prefetching</li>
+</ul>
+
+<h3>Dataset</h3>
+<table>
+  <tr><th>Split</th><th>Images</th><th>Purpose</th></tr>
+  <tr><td>Train</td><td>8,852</td><td>Model learning</td></tr>
+  <tr><td>Validation</td><td>921</td><td>Hyperparameter tuning</td></tr>
+  <tr><td>Test</td><td>918</td><td>Final evaluation</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>10,691</strong></td><td></td></tr>
+</table>
+
+<p><strong>Data Sources (Kaggle):</strong></p>
+<ol>
+  <li><code>rutvikbhatt/acne-grading-classificationdataset</code> — Original severity-labeled dataset</li>
+  <li><code>ACNE04</code> — 1,457 severity-graded clinical images</li>
+  <li><code>tiswan14/acne-dataset-image</code> — 4,317 acne type images (mapped to severity)</li>
+</ol>
+
+<p><strong>Class Distribution (Train):</strong></p>
+<table>
+  <tr><th>Class</th><th>Images</th><th>Percentage</th></tr>
+  <tr><td>Mild</td><td>3,613</td><td>40.8%</td></tr>
+  <tr><td>Moderate</td><td>3,425</td><td>38.7%</td></tr>
+  <tr><td>Severe</td><td>1,814</td><td>20.5%</td></tr>
+</table>
+
+<hr>
+
+<h2>📈 Model Performance (Production)</h2>
+
+<div class="metric-grid">
+  <div class="metric-card">
+    <div class="value">77.3%</div>
+    <div class="label">Validation Accuracy</div>
+  </div>
+  <div class="metric-card">
+    <div class="value">~76.4%</div>
+    <div class="label">F1 Score</div>
+  </div>
+  <div class="metric-card">
+    <div class="value">85.5%</div>
+    <div class="label">Precision</div>
+  </div>
+  <div class="metric-card">
+    <div class="value">69.1%</div>
+    <div class="label">Recall</div>
+  </div>
+</div>
+
+<blockquote><p>Trained on NVIDIA RTX 4060 Laptop GPU (8.6GB VRAM) using the PyTorch backend for Keras 3.</p></blockquote>
+
+<hr>
+
+<div class="page-break"></div>
+
+<h2>🎨 Frontend Features</h2>
+
+<h3>Pages</h3>
+<table>
+  <tr><th>Page</th><th>Description</th></tr>
+  <tr><td><strong>Landing Page</strong> (<code>/</code>)</td><td>Premium dark-themed hero with 3D animated face model, feature cards, smooth scroll</td></tr>
+  <tr><td><strong>Login</strong> (<code>/login</code>)</td><td>Glassmorphism card with animated gradient orbs, emerald CTA</td></tr>
+  <tr><td><strong>Skin Quiz</strong> (<code>/skin-quiz</code>)</td><td>Interactive quiz to determine user's skin type before analysis</td></tr>
+  <tr><td><strong>Analyze</strong> (<code>/analyze</code>)</td><td>Camera capture / image upload → scanning animation → full results</td></tr>
+  <tr><td><strong>History</strong> (<code>/history</code>)</td><td>Past scan history with before/after progress tracking</td></tr>
+</table>
+
+<h3>Design System</h3>
+<ul>
+  <li><strong>Theme:</strong> Deep navy (#060a14) background with emerald green accents</li>
+  <li><strong>Style:</strong> Glassmorphism, gradient orbs, micro-animations</li>
+  <li><strong>Typography:</strong> Modern sans-serif (Inter)</li>
+  <li><strong>Animations:</strong> Framer Motion for page transitions, scanning overlays, component reveals</li>
+</ul>
+
+<hr>
+
+<h2>📁 Project Structure</h2>
+<pre><code>newapp/
+├── app/                              # Next.js App Router pages
+│   ├── page.tsx                      # Landing page (3D hero)
+│   ├── login/page.tsx                # Authentication
+│   ├── skin-quiz/page.tsx            # Skin type quiz
+│   ├── analyze/page.tsx              # Main analysis page
+│   └── history/page.tsx              # Scan history
+├── components/                       # React components
+│   ├── HeroScene.tsx                 # 3D face model
+│   ├── ResultsView.tsx               # Full results report
+│   ├── SeverityGauge.tsx             # Severity visualization
+│   └── ProgressTracker.tsx           # Before/after tracking
+├── acne_ai_project/                  # Python ML backend
+│   ├── api/app.py                    # Flask REST API
+│   ├── inference/pipeline.py         # Full prediction pipeline
+│   ├── inference/face_detection.py   # MediaPipe face detector
+│   ├── training/train_severity.py    # Model training script
+│   ├── data/augment_data.py          # Data augmentation
+│   ├── config/config.yaml            # Training hyperparameters
+│   ├── config/recommendations.json   # Skincare recommendations DB
+│   └── models/saved/                 # Trained .keras model files
+├── package.json                      # Frontend dependencies
+└── requirements.txt                  # Python dependencies</code></pre>
+
+<hr>
+
+<h2>🔑 Key Technical Decisions</h2>
+<ol>
+  <li><strong>EfficientNetB3 over MobileNetV2</strong> — Better accuracy-to-parameter ratio for medical imaging</li>
+  <li><strong>Keras 3 + PyTorch backend</strong> — Best of both worlds: Keras simplicity + PyTorch GPU speed</li>
+  <li><strong>tf.data.Dataset</strong> — 10x faster than ImageDataGenerator for large datasets</li>
+  <li><strong>2-Phase Training</strong> — Phase 1 learns acne patterns, Phase 2 fine-tunes for skin-specific details</li>
+  <li><strong>MediaPipe Face Detection</strong> — Lightweight, accurate, rejects non-face uploads</li>
+  <li><strong>Personalized Recommendations</strong> — Not just diagnosis, but actionable skincare plans by skin type</li>
+</ol>
+
+<hr>
+
+<h2>🚀 Future Improvements</h2>
+<ul>
+  <li>Reach 90%+ accuracy with more diverse training data and longer fine-tuning</li>
+  <li>Deploy model as TensorFlow.js or ONNX for client-side inference (no backend needed)</li>
+  <li>Add user authentication with a real database</li>
+  <li>Build a mobile app (React Native) for on-the-go scanning</li>
+</ul>
+
+</body>
+</html>

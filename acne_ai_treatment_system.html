@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ACNE AI — Treatment Recommendation System (Detailed)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a1a2e;
+            line-height: 1.7;
+            padding: 40px 60px;
+            max-width: 920px;
+            margin: 0 auto;
+            background: #fff;
+        }
+
+        @media print {
+            body {
+                padding: 20px 30px;
+                font-size: 10.5px;
+                line-height: 1.5;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 15px;
+            }
+
+            h3 {
+                font-size: 12.5px;
+            }
+
+            table {
+                font-size: 9.5px;
+            }
+
+            pre {
+                font-size: 8.5px;
+            }
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #64748b;
+            margin-bottom: 28px;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 32px;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 3px solid #10b981;
+        }
+
+        h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 16px;
+            font-size: 13px;
+        }
+
+        th {
+            background: #0f172a;
+            color: #fff;
+            padding: 9px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 7px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #e11d48;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 14px 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+
+        pre code {
+            background: none;
+            color: #e2e8f0;
+            padding: 0;
+        }
+
+        ul,
+        ol {
+            margin: 6px 0 14px 22px;
+            font-size: 14px;
+        }
+
+        li {
+            margin-bottom: 3px;
+            color: #334155;
+        }
+
+        blockquote {
+            border-left: 4px solid #10b981;
+            padding: 10px 14px;
+            background: #f0fdf4;
+            margin: 10px 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        blockquote p {
+            color: #166534;
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .badge-mild {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-mod {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+
+        .badge-sev {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .badge-green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .flow-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+
+        .flow-step {
+            background: #f0fdf4;
+            border: 1px solid #a7f3d0;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            color: #10b981;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>💊 ACNE AI — Treatment Recommendation System</h1>
+    <p class="subtitle">Complete technical documentation of how the personalized skincare recommendation engine works —
+        from algorithm to clinical sources.</p>
+
+    <hr>
+
+    <h2>1. System Architecture Overview</h2>
+
+    <p>The Acne AI app uses a <strong>two-layer architecture</strong> that separates diagnosis from treatment:</p>
+
+    <div class="flow-box">
+        <div class="flow-step">📸 User Photo</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">🧠 <strong>Layer 1: AI Model</strong><br><small>EfficientNetB3
+                CNN</small><br><small>Output: Mild / Moderate / Severe</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">📝 <strong>Skin Quiz</strong><br><small>Oily / Dry / Combo / Sensitive / Normal</small>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">💊 <strong>Layer 2: Rule-Based Engine</strong><br><small>Lookup: Severity × Skin
+                Type</small><br><small>Source: recommendations.json</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">📋 <strong>Personalized Report</strong></div>
+    </div>
+
+    <blockquote>
+        <p><strong>Key Design Decision:</strong> The AI model performs ONLY the diagnosis (classification). The
+            treatment recommendations come from a curated, static clinical knowledge base — NOT from AI generation. This
+            ensures safety, auditability, and determinism in medical advice.</p>
+    </blockquote>
+
+    <hr>
+
+    <h2>2. Algorithm Used</h2>
+
+    <h3>For Diagnosis → Deep Learning (EfficientNetB3 CNN)</h3>
+    <p>A Convolutional Neural Network classifies the face image into 3 severity classes using transfer learning from
+        ImageNet.</p>
+
+    <h3>For Recommendations → Rule-Based Expert System</h3>
+    <p>A <strong>deterministic lookup table</strong> (JSON database) maps <code>[Severity × Skin Type]</code> to a
+        complete treatment plan. This is the same approach used in clinical decision support systems (CDSS) in
+        hospitals.</p>
+
+    <table>
+        <tr>
+            <th>Approach</th>
+            <th>Used For</th>
+            <th>Why</th>
+        </tr>
+        <tr>
+            <td>Deep Learning (CNN)</td>
+            <td>Image → Severity classification</td>
+            <td>Learns visual patterns from pixels automatically</td>
+        </tr>
+        <tr>
+            <td>Rule-Based Expert System</td>
+            <td>Severity + Skin Type → Treatment plan</td>
+            <td>Safe, deterministic, auditable for medical use</td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <h2>3. The Decision Matrix</h2>
+
+    <p>The system produces <strong>15 unique treatment combinations</strong> (3 severities × 5 skin types):</p>
+
+    <table>
+        <tr>
+            <th></th>
+            <th>Oily</th>
+            <th>Dry</th>
+            <th>Combination</th>
+            <th>Sensitive</th>
+            <th>Normal</th>
+        </tr>
+        <tr>
+            <td><span class="badge badge-mild">MILD</span></td>
+            <td>SA 2% + Clay mask + Oil-free SPF</td>
+            <td>SA 0.5% + HA serum + Cream cleanser</td>
+            <td>SA on T-zone only + Multi-masking</td>
+            <td>Azelaic Acid 10% + Fragrance-free</td>
+            <td>SA 2% + BHA weekly + SPF 30</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-mod">MODERATE</span></td>
+            <td>BP 5% + Gel moisturizer + Zinc</td>
+            <td>BP 2.5% + HA + Squalane oil</td>
+            <td>BP spot treatment + Niacinamide</td>
+            <td>Azelaic Acid 15% + Aloe Vera</td>
+            <td>BP 2.5% + Adapalene nightly</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-sev">SEVERE</span></td>
+            <td>Derm + Accutane + Oil-free SPF</td>
+            <td>Derm + Aquaphor + 3L water/day</td>
+            <td>Derm + Oral + Topical combo</td>
+            <td>Derm + Vanicream + Cortisone shots</td>
+            <td>Derm + Isotretinoin 3-6 months</td>
+        </tr>
+    </table>
+
+    <p><small><strong>SA</strong> = Salicylic Acid, <strong>BP</strong> = Benzoyl Peroxide, <strong>HA</strong> =
+            Hyaluronic Acid, <strong>Derm</strong> = See Dermatologist</small></p>
+
+    <hr>
+
+    <h2>4. What Each Treatment Plan Contains</h2>
+
+    <p>For every severity level, the system returns <strong>9 components</strong>:</p>
+
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Field</th>
+            <th>Description</th>
+            <th>Example (Moderate, Oily skin)</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td><code>likely_types</code></td>
+            <td>Probable acne type</td>
+            <td>Papules (Red Bumps), Pustules (Pus-filled)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><code>timeline</code></td>
+            <td>Expected improvement time</td>
+            <td>"6-8 weeks for visible improvement"</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><code>key_ingredients</code></td>
+            <td>Active ingredients with purpose</td>
+            <td>Benzoyl Peroxide (kills bacteria), Adapalene (cell turnover)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><code>morning_routine</code></td>
+            <td>Step-by-step AM plan</td>
+            <td>BP wash → Niacinamide → Oil-free SPF</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><code>night_routine</code></td>
+            <td>Step-by-step PM plan</td>
+            <td>Gentle cleanse → Adapalene → Ceramide moisturizer</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><code>dos</code></td>
+            <td>Lifestyle recommendations</td>
+            <td>Ice pimples 5 min, introduce actives one at a time</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><code>donts</code></td>
+            <td>Things to avoid</td>
+            <td>Don't mix BP+Retinoid, don't pop pustules</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><code>products</code></td>
+            <td>Specific product names</td>
+            <td>PanOxyl 4%, Differin Gel, COSRX Patches</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><code>by_skin_type</code></td>
+            <td>Skin-type-specific variant</td>
+            <td>Oily: "Use BP 5%, gel moisturizer, Zinc supplements"</td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <div class="page-break"></div>
+
+    <h2>5. Severity-Specific Treatment Logic</h2>
+
+    <h3><span class="badge badge-mild">MILD</span> — Comedonal Acne (Blackheads & Whiteheads)</h3>
+
+    <div class="highlight-box">
+        <p><strong>Clinical Logic:</strong> Mild acne = clogged pores, NOT bacterial infection. Pores are blocked by
+            dead skin cells and sebum (oil). Treatment focuses on <strong>chemical exfoliation</strong> to dissolve the
+            buildup and <strong>retinoids</strong> to speed skin cell turnover.</p>
+    </div>
+
+    <table>
+        <tr>
+            <th>Ingredient</th>
+            <th>Mechanism</th>
+            <th>Evidence</th>
+        </tr>
+        <tr>
+            <td>Salicylic Acid (BHA) 2%</td>
+            <td>Oil-soluble acid penetrates pores, dissolves keratin plugs</td>
+            <td>AAD first-line OTC for comedonal acne</td>
+        </tr>
+        <tr>
+            <td>Niacinamide (Vitamin B3)</td>
+            <td>Reduces sebum production by 23% (4 weeks), anti-inflammatory</td>
+            <td>Journal of Dermatological Treatment, 2013</td>
+        </tr>
+        <tr>
+            <td>Retinol / Adapalene</td>
+            <td>Increases skin cell turnover, prevents new comedones from forming</td>
+            <td>FDA-approved OTC retinoid (Differin)</td>
+        </tr>
+    </table>
+
+    <h3><span class="badge badge-mod">MODERATE</span> — Inflammatory Acne (Papules & Pustules)</h3>
+
+    <div class="highlight-box">
+        <p><strong>Clinical Logic:</strong> Moderate acne = <em>Cutibacterium acnes</em> (C. acnes) bacteria actively
+            infecting clogged pores, causing inflammation. Treatment requires <strong>antibacterial agents</strong> (BP)
+            + <strong>retinoids</strong> (Adapalene) on separate schedules to avoid deactivation.</p>
+    </div>
+
+    <table>
+        <tr>
+            <th>Ingredient</th>
+            <th>Mechanism</th>
+            <th>Evidence</th>
+        </tr>
+        <tr>
+            <td>Benzoyl Peroxide 2.5-5%</td>
+            <td>Releases oxygen inside pores, killing anaerobic C. acnes bacteria</td>
+            <td>AAD + NICE guidelines: first-line antibacterial</td>
+        </tr>
+        <tr>
+            <td>Adapalene (Retinoid) 0.1%</td>
+            <td>Normalizes follicular keratinization, anti-inflammatory</td>
+            <td>FDA-approved, 50%+ lesion reduction in clinical trials</td>
+        </tr>
+        <tr>
+            <td>Azelaic Acid 15%</td>
+            <td>Dual: antibacterial + reduces post-inflammatory marks</td>
+            <td>EU-approved for acne and rosacea</td>
+        </tr>
+        <tr>
+            <td>Hydrocolloid patches</td>
+            <td>Absorbs pus, creates moist healing environment, prevents picking</td>
+            <td>Standard wound care science</td>
+        </tr>
+    </table>
+
+    <blockquote>
+        <p><strong>Important Rule:</strong> BP (morning) and Adapalene (night) are NEVER used at the same time — BP
+            oxidizes retinoids and deactivates them. This is reflected in the separate AM/PM routines.</p>
+    </blockquote>
+
+    <h3><span class="badge badge-sev">SEVERE</span> — Nodulocystic Acne (Cysts & Nodules)</h3>
+
+    <div class="highlight-box">
+        <p><strong>Clinical Logic:</strong> Severe acne = deep infections beneath the skin surface. OTC products cannot
+            physically reach these lesions. Every treatment plan explicitly states: <strong>"See a dermatologist —
+                prescription treatment is essential."</strong></p>
+    </div>
+
+    <table>
+        <tr>
+            <th>Treatment</th>
+            <th>Mechanism</th>
+            <th>Evidence</th>
+        </tr>
+        <tr>
+            <td>Isotretinoin (Accutane)</td>
+            <td>Shrinks sebaceous glands by 80%, permanently reduces oil production</td>
+            <td>Gold standard: 80% long-term remission (NEJM)</td>
+        </tr>
+        <tr>
+            <td>Doxycycline (oral antibiotic)</td>
+            <td>Systemically reduces bacterial load during active flares</td>
+            <td>AAD first-line oral antibiotic for acne</td>
+        </tr>
+        <tr>
+            <td>Spironolactone</td>
+            <td>Anti-androgen — blocks hormonal triggers (women only)</td>
+            <td>Effective for hormonal acne (JAAD, 2017)</td>
+        </tr>
+        <tr>
+            <td>Cortisone injection</td>
+            <td>Intralesional steroid flattens cysts within 24-48 hours</td>
+            <td>Standard dermatology in-office procedure</td>
+        </tr>
+    </table>
+
+    <blockquote>
+        <p><strong>Safety Note:</strong> For Severe classification, our app recommends ONLY ultra-gentle OTC products
+            (Vanicream, CeraVe, SPF) alongside explicit instructions to see a professional. We never recommend
+            prescription drugs without a dermatologist.</p>
+    </blockquote>
+
+    <hr>
+
+    <div class="page-break"></div>
+
+    <h2>6. How Skin Type Modifies Treatment</h2>
+
+    <p>The same severity gets <strong>different products</strong> based on skin type. Here's an example for <span
+            class="badge badge-mod">MODERATE</span> acne:</p>
+
+    <div class="grid-2">
+        <div class="card">
+            <h4>🫧 Oily Skin</h4>
+            <ul>
+                <li>BP <strong>5%</strong> wash (higher concentration OK)</li>
+                <li>Gel-based, oil-free moisturizer</li>
+                <li>Zinc supplements (30mg/day) to reduce oil</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>🏜️ Dry Skin</h4>
+            <ul>
+                <li>BP <strong>2.5%</strong> only (lower to avoid drying)</li>
+                <li>Hyaluronic Acid serum before moisturizer</li>
+                <li>Squalane oil (non-comedogenic hydration)</li>
+                <li>Cream cleanser, NOT foaming</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>⚠️ Sensitive Skin</h4>
+            <ul>
+                <li><strong>Skip BP entirely</strong> → Azelaic Acid 15% instead</li>
+                <li>Retinoid only 2-3x/week at lowest dose</li>
+                <li>Aloe Vera gel as moisturizer</li>
+                <li>Fragrance-free everything</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>🔄 Combination Skin</h4>
+            <ul>
+                <li>BP as spot treatment (inflamed areas only)</li>
+                <li>Retinoid on oily/acne zones, skip dry areas</li>
+                <li>Niacinamide balances oil naturally</li>
+            </ul>
+        </div>
+    </div>
+
+    <p style="margin-top:12px;"><strong>Why this matters:</strong> Using BP 5% on sensitive skin causes chemical burns.
+        Using cream moisturizer on oily skin clogs pores further. The skin type layer ensures products are safe AND
+        effective for each user.</p>
+
+    <hr>
+
+    <h2>7. Code Implementation</h2>
+
+    <h3>Data Storage: <code>recommendations.json</code></h3>
+    <p>A 375-line JSON file storing all treatment data. Structure:</p>
+
+    <pre><code>{
+  "Mild": {
+    "likely_types": ["Blackheads", "Whiteheads"],
+    "timeline": "4-6 weeks",
+    "key_ingredients": [{ "name": "Salicylic Acid 2%", "purpose": "Unclogs pores" }, ...],
+    "morning_routine": ["SA cleanser", "Niacinamide serum", "SPF moisturizer"],
+    "night_routine": ["Double cleanse", "BHA 3×/week", "Retinol", "Ceramide cream"],
+    "dos": ["Change pillowcases", "2L water/day", ...],
+    "donts": ["Don't squeeze", "Don't skip SPF", ...],
+    "products": [{ "name": "CeraVe SA Cleanser", "type": "Cleanser", "key_ingredient": "SA 2%" }],
+    "by_skin_type": {
+      "Oily": ["Use oil-free SA cleanser...", "Clay masks weekly..."],
+      "Dry": ["Use cream-based cleanser...", "HA serum..."],
+      "Sensitive": ["Avoid SA, use Azelaic Acid 10%...", "Fragrance-free..."],
+      ...
+    },
+    "type_treatments": {
+      "Blackheads": ["BHA dissolves pore buildup...", "Retinol prevents new ones..."],
+      "Whiteheads": ["Adapalene speeds cell turnover...", "Never squeeze..."]
+    }
+  },
+  "Moderate": { ... },
+  "Severe": { ... },
+  "Inconclusive": { ... }
+}</code></pre>
+
+    <h3>Lookup Function: <code>pipeline.py → get_recommendations()</code></h3>
+
+    <pre><code>def get_recommendations(self, severity, skin_type="Normal"):
+    # 1. Load the clinical knowledge base
+    recommendations_db = json.load(open("config/recommendations.json"))
+
+    # 2. Look up by AI-predicted severity
+    entry = recommendations_db[severity]   # e.g. "Moderate"
+
+    # 3. Get skin-type-specific advice from user quiz
+    skin_recs = entry["by_skin_type"].get(skin_type, entry.get("general", []))
+
+    # 4. Return complete personalized report
+    return {
+        "likely_types":      entry["likely_types"],
+        "key_ingredients":   entry["key_ingredients"],
+        "morning_routine":   entry["morning_routine"],
+        "night_routine":     entry["night_routine"],
+        "dos":               entry["dos"],
+        "donts":             entry["donts"],
+        "products":          entry["products"],
+        "timeline":          entry["timeline"],
+        "personalized_plan": skin_recs,         # ← skin-type specific
+        "type_treatments":   entry["type_treatments"]
+    }</code></pre>
+
+    <hr>
+
+    <h2>8. Clinical Sources & Evidence Base</h2>
+
+    <table>
+        <tr>
+            <th>Source</th>
+            <th>What We Used From It</th>
+        </tr>
+        <tr>
+            <td><strong>American Academy of Dermatology (AAD)</strong> — Guidelines of Care for Acne Vulgaris Management
+            </td>
+            <td>Severity classification, treatment ladder (OTC → prescription → Isotretinoin), recommended first-line
+                ingredients</td>
+        </tr>
+        <tr>
+            <td><strong>FDA Approvals</strong></td>
+            <td>Adapalene (OTC retinoid), Benzoyl Peroxide, Isotretinoin safety data</td>
+        </tr>
+        <tr>
+            <td><strong>NICE Guidelines (UK)</strong></td>
+            <td>BP concentration limits (2.5% as effective as 10% with less irritation)</td>
+        </tr>
+        <tr>
+            <td><strong>Journal of Dermatological Treatment (2013)</strong></td>
+            <td>Niacinamide efficacy — 23% sebum reduction in 4 weeks</td>
+        </tr>
+        <tr>
+            <td><strong>New England Journal of Medicine (NEJM)</strong></td>
+            <td>Isotretinoin — 80% long-term remission rate for severe cystic acne</td>
+        </tr>
+        <tr>
+            <td><strong>JAAD (Journal of the American Academy of Dermatology, 2017)</strong></td>
+            <td>Spironolactone effectiveness for hormonal acne in women</td>
+        </tr>
+        <tr>
+            <td><strong>Cochrane Systematic Reviews</strong></td>
+            <td>Comparative efficacy: BP vs topical antibiotics vs retinoids</td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <h2>9. Safety Measures</h2>
+
+    <table>
+        <tr>
+            <th>Safety Feature</th>
+            <th>How It Works</th>
+        </tr>
+        <tr>
+            <td><strong>Confidence Threshold</strong></td>
+            <td>If AI confidence < 40%, result="Inconclusive" — no treatment is recommended</td>
+        </tr>
+        <tr>
+            <td><strong>Face Detection Gate</strong></td>
+            <td>MediaPipe rejects non-face images before any classification happens</td>
+        </tr>
+        <tr>
+            <td><strong>No AI-generated treatments</strong></td>
+            <td>All recommendations are from a static, auditable JSON database — zero hallucination risk</td>
+        </tr>
+        <tr>
+            <td><strong>Severe = See Doctor</strong></td>
+            <td>Every Severe treatment plan mandates dermatologist consultation</td>
+        </tr>
+        <tr>
+            <td><strong>Skin type filtering</strong></td>
+            <td>Prevents dangerous ingredient mismatches (e.g., BP on sensitive skin)</td>
+        </tr>
+        <tr>
+            <td><strong>Deterministic output</strong></td>
+            <td>Same input = same output every time. No randomness.</td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <h2>10. How to Explain This in a Presentation</h2>
+
+    <div class="highlight-box">
+        <h3 style="color:#10b981; margin-top:0;">One-liner:</h3>
+        <p style="font-size:15px;"><em>"Our AI diagnoses the severity using a deep learning CNN, and then a rule-based
+                expert system built on AAD clinical guidelines gives personalized treatment recommendations based on
+                both the severity and the user's skin type."</em></p>
+
+        <h3 style="color:#10b981;">If asked "Why not use AI for recommendations too?":</h3>
+        <p style="font-size:15px;"><em>"We deliberately chose a rule-based approach for safety. AI-generated medical
+                advice can hallucinate or give wrong products for a specific skin type. A static, expert-reviewed
+                database is more reliable, explainable, and safe for a healthcare application."</em></p>
+
+        <h3 style="color:#10b981;">If asked "Where did the treatments come from?":</h3>
+        <p style="font-size:15px;"><em>"Every ingredient is backed by published clinical evidence. Benzoyl Peroxide and
+                Adapalene are FDA-approved. Isotretinoin has an 80% remission rate per the NEJM. The recommendations
+                follow AAD guidelines for acne management."</em></p>
+    </div>
+
+</body>
+
+</html>

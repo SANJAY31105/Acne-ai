@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
-import { Upload, Camera, RefreshCw, LogOut } from "lucide-react";
+import { Upload, Camera, RefreshCw, LogOut, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -118,19 +118,24 @@ export default function AnalyzePage() {
 
             setResults(data);
 
-            // Save to History
+            // Save to History (no image blob — saves quota)
             const newHistoryItem = {
                 id: Date.now().toString(),
                 date: new Date().toISOString(),
-                image: image,
-                diagnosis: data.primary_diagnosis,
                 severity: data.primary_diagnosis?.severity || "Unknown",
                 confidence: data.primary_diagnosis?.confidence || 0,
             };
 
-            const existingHistory = JSON.parse(localStorage.getItem("acne_scan_history") || "[]");
-            const updatedHistory = [...existingHistory, newHistoryItem];
-            localStorage.setItem("acne_scan_history", JSON.stringify(updatedHistory));
+            try {
+                const existingHistory = JSON.parse(localStorage.getItem("acne_scan_history") || "[]");
+                // Keep only most recent 10 scans to avoid quota issues
+                const updatedHistory = [newHistoryItem, ...existingHistory].slice(0, 10);
+                localStorage.setItem("acne_scan_history", JSON.stringify(updatedHistory));
+            } catch (storageErr) {
+                // If still fails, clear and start fresh
+                console.warn("localStorage quota exceeded, clearing history.", storageErr);
+                localStorage.setItem("acne_scan_history", JSON.stringify([newHistoryItem]));
+            }
 
         } catch (err) {
             setError("Failed to analyze image. Please try again.");
@@ -178,6 +183,62 @@ export default function AnalyzePage() {
             <main className="max-w-5xl mx-auto">
                 {results ? (
                     <ResultsView results={results} image={image!} onReset={reset} />
+                ) : analyzing ? (
+                    /* ─── Skeleton Results Layout ─── */
+                    <div className="animate-in zoom-in-95 duration-500">
+                        <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+                            {/* Left Column Skeleton (Image + Scan Overlay) */}
+                            <div className="space-y-6">
+                                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col items-center justify-center backdrop-blur-sm">
+                                    {image && (
+                                        <Image src={image} alt="Analyzing" fill className="object-cover opacity-60" />
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+                                    {/* Scan Line */}
+                                    <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_15px_rgba(99,102,241,0.6)] animate-[scanLine_2s_ease-in-out_infinite]" />
+                                    {/* Corners */}
+                                    <div className="absolute top-6 left-6 w-10 h-10 border-t-2 border-l-2 border-indigo-400/80 rounded-tl-md animate-pulse" />
+                                    <div className="absolute top-6 right-6 w-10 h-10 border-t-2 border-r-2 border-indigo-400/80 rounded-tr-md animate-pulse" />
+                                    <div className="absolute bottom-6 left-6 w-10 h-10 border-b-2 border-l-2 border-indigo-400/80 rounded-bl-md animate-pulse" />
+                                    <div className="absolute bottom-6 right-6 w-10 h-10 border-b-2 border-r-2 border-indigo-400/80 rounded-br-md animate-pulse" />
+                                    
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-10">
+                                        <Loader2 className="w-12 h-12 text-indigo-400 animate-spin" />
+                                        <ScanStatusText />
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-24 h-24 rounded-full skeleton-loader shrink-0" />
+                                    <div className="flex-1 space-y-3">
+                                        <div className="h-16 rounded-2xl skeleton-loader w-full" />
+                                        <div className="h-16 rounded-2xl skeleton-loader w-full" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Right Column Skeleton (Dashboard Items) */}
+                            <div className="flex flex-col gap-6">
+                                <div className="h-24 rounded-2xl skeleton-loader w-full" />
+                                <div className="h-12 rounded-xl skeleton-loader w-full" />
+                                <div className="space-y-4">
+                                    <div className="h-6 skeleton-loader w-40 rounded-full" />
+                                    <div className="flex gap-2">
+                                        <div className="h-12 flex-1 skeleton-loader rounded-xl" />
+                                        <div className="h-12 flex-1 skeleton-loader rounded-xl" />
+                                    </div>
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="h-16 skeleton-loader rounded-xl w-full" />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mt-auto">
+                                    <div className="h-32 skeleton-loader rounded-2xl w-full" />
+                                    <div className="h-32 skeleton-loader rounded-2xl w-full" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center gap-8">
                         <h1 className="text-4xl md:text-5xl font-black text-center tracking-tight">
@@ -196,25 +257,6 @@ export default function AnalyzePage() {
                                         fill
                                         className="object-cover"
                                     />
-                                    {/* ─── Scanning Overlay ─── */}
-                                    {analyzing && (
-                                        <div className="absolute inset-0 z-10">
-                                            {/* Dark overlay */}
-                                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
-                                            {/* Scan line */}
-                                            <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_rgba(52,211,153,0.6)] animate-[scanLine_2.5s_ease-in-out_infinite]" />
-                                            {/* Corner brackets */}
-                                            <div className="absolute top-6 left-6 w-10 h-10 border-t-2 border-l-2 border-emerald-400/80 rounded-tl-md animate-pulse" />
-                                            <div className="absolute top-6 right-6 w-10 h-10 border-t-2 border-r-2 border-emerald-400/80 rounded-tr-md animate-pulse" />
-                                            <div className="absolute bottom-6 left-6 w-10 h-10 border-b-2 border-l-2 border-emerald-400/80 rounded-bl-md animate-pulse" />
-                                            <div className="absolute bottom-6 right-6 w-10 h-10 border-b-2 border-r-2 border-emerald-400/80 rounded-br-md animate-pulse" />
-                                            {/* Center info */}
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                                                <div className="w-16 h-16 rounded-full border-2 border-emerald-400/40 border-t-emerald-400 animate-spin" />
-                                                <ScanStatusText />
-                                            </div>
-                                        </div>
-                                    )}
                                     {!analyzing && (
                                         <button
                                             onClick={reset}

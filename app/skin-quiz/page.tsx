@@ -2,67 +2,94 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Droplets, Sun, Sparkles, Shield, Zap } from "lucide-react";
+import { ChevronRight, Droplets, Sun, Sparkles, Shield, Zap, User, UserCircle, Users } from "lucide-react";
 import Link from "next/link";
 
-const QUESTIONS = [
-    {
-        id: "oiliness",
-        question: "How does your skin feel by midday?",
-        icon: Droplets,
-        options: [
-            { label: "Very oily & shiny", value: "oily" },
-            { label: "Tight, flaky, or rough", value: "dry" },
-            { label: "Oily T-zone, dry cheeks", value: "combination" },
-            { label: "Comfortable, no issues", value: "normal" },
-        ],
-    },
-    {
-        id: "sensitivity",
-        question: "How does your skin react to new products?",
-        icon: Shield,
-        options: [
-            { label: "Burns, stings, or turns red easily", value: "sensitive" },
-            { label: "Occasionally irritated", value: "moderate" },
-            { label: "Rarely reacts to anything", value: "resilient" },
-        ],
-    },
-    {
-        id: "pores",
-        question: "How would you describe your pores?",
-        icon: Sun,
-        options: [
-            { label: "Large and visible (especially nose/cheeks)", value: "large" },
-            { label: "Small and barely visible", value: "small" },
-            { label: "Mixed - large on nose, small elsewhere", value: "mixed" },
-        ],
-    },
-    {
-        id: "breakouts",
-        question: "How often do you get breakouts?",
-        icon: Zap,
-        options: [
-            { label: "Constantly - new pimples every week", value: "frequent" },
-            { label: "Sometimes - around period or stress", value: "occasional" },
-            { label: "Rarely - once every few months", value: "rare" },
-        ],
-    },
-    {
-        id: "hydration",
-        question: "After washing your face (no moisturizer), how does it feel after 30 minutes?",
-        icon: Sparkles,
-        options: [
-            { label: "Oily and slick again", value: "oily" },
-            { label: "Dry, tight, or uncomfortable", value: "dry" },
-            { label: "Normal and comfortable", value: "normal" },
-        ],
-    },
-];
+const getQuestions = (gender: string | null) => {
+    const baseQuestions = [
+        {
+            id: "oiliness",
+            question: "How does your skin feel by midday?",
+            icon: Droplets,
+            options: [
+                { label: "Very oily & shiny", value: "oily" },
+                { label: "Tight, flaky, or rough", value: "dry" },
+                { label: "Oily T-zone, dry cheeks", value: "combination" },
+                { label: "Comfortable, no issues", value: "normal" },
+            ],
+        },
+        {
+            id: "sensitivity",
+            question: "How does your skin react to new products?",
+            icon: Shield,
+            options: [
+                { label: "Burns, stings, or turns red easily", value: "sensitive" },
+                { label: "Occasionally irritated", value: "moderate" },
+                { label: "Rarely reacts to anything", value: "resilient" },
+            ],
+        },
+        {
+            id: "pores",
+            question: "How would you describe your pores?",
+            icon: Sun,
+            options: [
+                { label: "Large and visible (especially nose/cheeks)", value: "large" },
+                { label: "Small and barely visible", value: "small" },
+                { label: "Mixed - large on nose, small elsewhere", value: "mixed" },
+            ],
+        },
+        {
+            id: "breakouts",
+            question: "How often do you get breakouts?",
+            icon: Zap,
+            options: [
+                { label: "Constantly - new pimples every week", value: "frequent" },
+                { label: "Sometimes - around period or stress", value: "occasional" },
+                { label: "Rarely - once every few months", value: "rare" },
+            ],
+        },
+        {
+            id: "hydration",
+            question: "After washing your face (no moisturizer), how does it feel after 30 minutes?",
+            icon: Sparkles,
+            options: [
+                { label: "Oily and slick again", value: "oily" },
+                { label: "Dry, tight, or uncomfortable", value: "dry" },
+                { label: "Normal and comfortable", value: "normal" },
+            ],
+        },
+    ];
 
-function determineSkinType(answers: Record<string, string>): { type: string; description: string } {
+    if (gender === "female") {
+        baseQuestions.push({
+            id: "hormonal",
+            question: "Do you notice breakouts correlating with your menstrual cycle or hormonal changes?",
+            icon: Zap,
+            options: [
+                { label: "Yes, definitely", value: "yes" },
+                { label: "No, or I'm not sure", value: "no" }
+            ],
+        });
+    } else if (gender === "male") {
+        baseQuestions.push({
+            id: "shaving",
+            question: "Does your skin often get irritated, red, or break out after shaving?",
+            icon: Shield,
+            options: [
+                { label: "Yes, frequently", value: "sensitive" },
+                { label: "Sometimes", value: "moderate" },
+                { label: "Rarely or I don't shave", value: "resilient" }
+            ],
+        });
+    }
+
+    return baseQuestions;
+};
+
+function determineSkinType(answers: Record<string, string>, gender: string | null): { type: string; description: string } {
     const oilySignals = [answers.oiliness === "oily", answers.hydration === "oily", answers.pores === "large"].filter(Boolean).length;
     const drySignals = [answers.oiliness === "dry", answers.hydration === "dry", answers.pores === "small"].filter(Boolean).length;
-    const sensitiveSignals = answers.sensitivity === "sensitive";
+    const sensitiveSignals = answers.sensitivity === "sensitive" || answers.shaving === "sensitive";
     const comboSignals = answers.oiliness === "combination" || answers.pores === "mixed";
 
     if (sensitiveSignals && drySignals >= 1) {
@@ -84,29 +111,37 @@ function determineSkinType(answers: Record<string, string>): { type: string; des
 }
 
 export default function SkinQuizPage() {
+    const [gender, setGender] = useState<string | null>(null);
     const [currentQ, setCurrentQ] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [result, setResult] = useState<{ type: string; description: string } | null>(null);
     const router = useRouter();
 
+    const questions = getQuestions(gender);
+
+    const handleGenderSelect = (selectedGender: string) => {
+        setGender(selectedGender);
+    };
+
     const handleAnswer = (questionId: string, value: string) => {
         const newAnswers = { ...answers, [questionId]: value };
         setAnswers(newAnswers);
 
-        if (currentQ < QUESTIONS.length - 1) {
+        if (currentQ < questions.length - 1) {
             setTimeout(() => setCurrentQ(currentQ + 1), 300);
         } else {
             // All done - determine skin type
-            const skinType = determineSkinType(newAnswers);
+            const skinType = determineSkinType(newAnswers, gender);
             setResult(skinType);
             // Save to localStorage for use in analysis
             localStorage.setItem("skin_type", JSON.stringify(skinType));
+            localStorage.setItem("user_gender", gender || "other");
         }
     };
 
-    const question = QUESTIONS[currentQ];
-    const Icon = question.icon;
-    const progress = ((currentQ + (result ? 1 : 0)) / QUESTIONS.length) * 100;
+    const question = questions[currentQ];
+    const Icon = question?.icon || Droplets;
+    const progress = gender === null ? 0 : ((currentQ + (result ? 1 : 0)) / questions.length) * 100;
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-6 font-sans">
@@ -123,11 +158,52 @@ export default function SkinQuizPage() {
                     />
                 </div>
                 <p className="text-xs text-zinc-500 mt-2 text-right">
-                    {result ? "Complete!" : `Question ${currentQ + 1} of ${QUESTIONS.length}`}
+                    {result ? "Complete!" : (gender === null ? "Let's start" : `Question ${currentQ + 1} of ${questions.length}`)}
                 </p>
             </div>
 
-            {!result ? (
+            {gender === null ? (
+                /* Gender Selection Card */
+                <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 flex flex-col items-center justify-center mx-auto mb-6">
+                            <Users className="w-8 h-8 text-indigo-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2">Welcome!</h2>
+                        <p className="text-zinc-400 mb-8">To give you the most accurate skin assessment, please select your gender.</p>
+                        
+                        <div className="space-y-4">
+                            <button
+                                onClick={() => handleGenderSelect("female")}
+                                className="w-full p-4 rounded-xl border bg-zinc-800/50 border-zinc-700/50 hover:bg-zinc-800 hover:border-indigo-500/50 text-zinc-300 transition-all duration-200 flex items-center gap-4 group"
+                            >
+                                <div className="p-2 bg-zinc-800 rounded-lg group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-colors">
+                                    <User className="w-5 h-5" />
+                                </div>
+                                <span>Female</span>
+                            </button>
+                            <button
+                                onClick={() => handleGenderSelect("male")}
+                                className="w-full p-4 rounded-xl border bg-zinc-800/50 border-zinc-700/50 hover:bg-zinc-800 hover:border-indigo-500/50 text-zinc-300 transition-all duration-200 flex items-center gap-4 group"
+                            >
+                                <div className="p-2 bg-zinc-800 rounded-lg group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-colors">
+                                    <UserCircle className="w-5 h-5" />
+                                </div>
+                                <span>Male</span>
+                            </button>
+                            <button
+                                onClick={() => handleGenderSelect("other")}
+                                className="w-full p-4 rounded-xl border bg-zinc-800/50 border-zinc-700/50 hover:bg-zinc-800 hover:border-zinc-600 text-zinc-300 transition-all duration-200 flex items-center gap-4 group"
+                            >
+                                <div className="p-2 bg-zinc-800 rounded-lg group-hover:bg-zinc-700 transition-colors">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                <span>Non-binary / Prefer not to say</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ) : !result && question ? (
                 /* Question Card */
                 <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-300" key={currentQ}>
                     <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8">
@@ -153,7 +229,7 @@ export default function SkinQuizPage() {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : result ? (
                 /* Result Card */
                 <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 text-center">
@@ -175,6 +251,7 @@ export default function SkinQuizPage() {
 
                         <button
                             onClick={() => {
+                                setGender(null);
                                 setCurrentQ(0);
                                 setAnswers({});
                                 setResult(null);
@@ -185,7 +262,7 @@ export default function SkinQuizPage() {
                         </button>
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
     );
 }

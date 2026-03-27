@@ -9,14 +9,14 @@ os.environ["KERAS_BACKEND"] = "torch"
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import keras
-from keras.applications import EfficientNetB3
+from keras.applications import EfficientNetB4
 from keras import Model
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
 from keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger, Callback
 from sklearn.utils import class_weight
 import numpy as np
 import yaml
-from data.augment_data import get_train_augmentation_generator, get_basic_generator
+# Using tf.data.Dataset for high performance data loading
 
 # ─── Check GPU availability ───
 import torch
@@ -28,6 +28,10 @@ if torch.cuda.is_available():
     print(f"  VRAM:            {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 print(f"{'='*60}\n")
 
+# ─── Enable Mixed Precision (FP16) for 2x GPU throughput ───
+keras.mixed_precision.set_global_policy('mixed_float16')
+print("Mixed Precision: mixed_float16 enabled (2x GPU throughput)")
+
 
 def load_config():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,26 +40,43 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def build_severity_model(input_shape=(300, 300, 3), num_classes=3):
-    """EfficientNetB3 backbone with deeper classification head for skin analysis."""
-    base_model = EfficientNetB3(weights='imagenet', include_top=False, input_shape=input_shape)
+def build_severity_model(input_shape=(380, 380, 3), num_classes=3):
+    """EfficientNetB4 backbone with deeper classification head for skin analysis."""
+    from keras import layers
+    inputs = keras.Input(shape=input_shape)
     
+    # 1. Augmentation (runs on device during training, passes through during inference)
+    data_augmentation = keras.Sequential([
+        layers.RandomFlip("horizontal"),
+        layers.RandomRotation(0.25),
+        layers.RandomZoom(0.25),
+        layers.RandomContrast(0.3),
+        layers.RandomBrightness(0.2),
+        layers.RandomTranslation(0.1, 0.1),
+    ], name='data_augmentation')
+    
+    x = data_augmentation(inputs)
+    
+    # 2. Backbone — EfficientNetB4 (19M params, native 380x380)
+    base_model = EfficientNetB4(weights='imagenet', include_top=False, input_shape=input_shape)
     # Freeze base model initially
     base_model.trainable = False
     
-    x = base_model.output
+    x = base_model(x, training=False)
+    
+    # 3. Head — deeper with more capacity for fine-grained skin classification
     x = GlobalAveragePooling2D()(x)
     x = BatchNormalization()(x)
+    x = Dropout(0.5)(x)
+    x = Dense(768, activation='relu')(x)
+    x = BatchNormalization()(x)
     x = Dropout(0.4)(x)
-    x = Dense(512, activation='relu')(x)
+    x = Dense(384, activation='relu')(x)
     x = BatchNormalization()(x)
     x = Dropout(0.3)(x)
-    x = Dense(256, activation='relu')(x)
-    x = BatchNormalization()(x)
-    x = Dropout(0.2)(x)
     predictions = Dense(num_classes, activation='softmax')(x)
     
-    model = Model(inputs=base_model.input, outputs=predictions)
+    model = Model(inputs=inputs, outputs=predictions)
     return model
 
 
@@ -97,35 +118,39 @@ def train_severity():
     os.makedirs(models_dir, exist_ok=True)
     os.makedirs(logs_dir, exist_ok=True)
 
-    batch_size = config['data']['batch_size']
+    batch_size = 32  # B4 uses more VRAM at 380x380, keep at 32 for safety
     img_size = tuple(config['data']['image_size'])
     
-    # Generators
-    train_datagen = get_train_augmentation_generator()
-    val_datagen = get_basic_generator()
+    import tensorflow as tf
+    AUTOTUNE = tf.data.AUTOTUNE
 
-    raw_train_generator = train_datagen.flow_from_directory(
+    print("\nLoading datasets with tf.data for max speed...")
+    train_ds = keras.utils.image_dataset_from_directory(
         os.path.join(severity_dir, 'train'),
-        target_size=img_size,
+        label_mode='categorical',
+        image_size=img_size,
         batch_size=batch_size,
-        class_mode='categorical'
     )
 
-    val_generator = val_datagen.flow_from_directory(
+    val_ds = keras.utils.image_dataset_from_directory(
         os.path.join(severity_dir, 'val'),
-        target_size=img_size,
+        label_mode='categorical',
+        image_size=img_size,
         batch_size=batch_size,
-        class_mode='categorical'
     )
 
-    # Use the augmented train generator directly
-    train_generator = raw_train_generator
+    class_names = train_ds.class_names
+    num_classes = len(class_names)
+    print(f"Classes: {dict(enumerate(class_names))}")
 
-    print(f"\nClasses: {train_generator.class_indices}")
-    num_classes = len(raw_train_generator.class_indices)
-
-    # Class Weights
-    labels = raw_train_generator.classes
+    # Compute class weights fast
+    labels = []
+    for cls_idx, cls_name in enumerate(class_names):
+        cls_dir = os.path.join(severity_dir, 'train', cls_name)
+        if os.path.exists(cls_dir):
+            count = len([f for f in os.listdir(cls_dir) if f.lower().endswith(('.jpg','.jpeg','.png'))])
+            labels.extend([cls_idx] * count)
+            
     class_weights_arr = class_weight.compute_class_weight(
         class_weight='balanced',
         classes=np.unique(labels),
@@ -133,6 +158,11 @@ def train_severity():
     )
     class_weights_dict = dict(enumerate(class_weights_arr))
     print(f"Class Weights: {class_weights_dict}")
+
+    # Augmentations are now baked directly into the model for max PyTorch backend compatibility
+    # .prefetch() feeds GPU with zero wait. Skipping .cache() — 380x380 images don't fit in 15GB RAM
+    train_generator = train_ds.prefetch(buffer_size=AUTOTUNE)
+    val_generator = val_ds.prefetch(buffer_size=AUTOTUNE)
 
     # Build Model (EfficientNetB3)
     model = build_severity_model(input_shape=img_size + (3,), num_classes=num_classes)
@@ -152,15 +182,13 @@ def train_severity():
     phase1_epochs = config['model']['epochs_frozen']
     phase2_epochs = config['model']['epochs_finetune']
     
-    # Steps per epoch (since MixupGenerator doesn't have __len__ from flow)
-    steps_per_epoch = raw_train_generator.samples // batch_size
-    val_steps = val_generator.samples // batch_size
+    # Steps are automatically handled by tf.data
     
     # ── PHASE 1: Feature Extraction (Frozen Base) ──
     print(f"\n{'='*60}")
     print(f"  PHASE 1: Feature Extraction ({phase1_epochs} epochs)")
-    print(f"  Backbone: EfficientNetB3 (FROZEN), Image: {img_size}")
-    print(f"  Batch: {batch_size}, Steps/epoch: {steps_per_epoch}")
+    print(f"  Backbone: EfficientNetB4 (FROZEN), Image: {img_size}")
+    print(f"  Batch: {batch_size}, Fast tf.data pipeline")
     print(f"{'='*60}")
     
     phase1_callbacks = [
@@ -178,12 +206,10 @@ def train_severity():
     
     model.fit(
         train_generator,
-        steps_per_epoch=steps_per_epoch,
         validation_data=val_generator,
-        validation_steps=val_steps,
         epochs=phase1_epochs,
         class_weight=class_weights_dict,
-        callbacks=phase1_callbacks
+        callbacks=phase1_callbacks,
     )
 
     # ── PHASE 2: Fine-Tuning (Unfreeze top 50%) ──
@@ -194,7 +220,7 @@ def train_severity():
     
     model.trainable = True
     num_layers = len(model.layers)
-    freeze_until = int(num_layers * 0.5)  # Unfreeze top 50%
+    freeze_until = int(num_layers * 0.3)  # Unfreeze top 70% for deeper skin feature learning
     
     for layer in model.layers[:freeze_until]:
         if not isinstance(layer, BatchNormalization):
@@ -205,7 +231,7 @@ def train_severity():
 
     phase2_callbacks = [
         ModelCheckpoint(save_path, save_best_only=True, monitor='val_accuracy', verbose=1),
-        EarlyStopping(patience=15, restore_best_weights=True, monitor='val_loss', verbose=1),
+        EarlyStopping(patience=20, restore_best_weights=True, monitor='val_loss', verbose=1),
         CSVLogger(os.path.join(logs_dir, 'severity_training_v3_phase2.csv')),
         CosineAnnealingWarmup(max_lr=3e-5, min_lr=1e-7, warmup_epochs=5, total_epochs=phase2_epochs),
     ]
@@ -218,12 +244,10 @@ def train_severity():
     
     model.fit(
         train_generator,
-        steps_per_epoch=steps_per_epoch,
         validation_data=val_generator,
-        validation_steps=val_steps,
         epochs=phase2_epochs,
         class_weight=class_weights_dict,
-        callbacks=phase2_callbacks
+        callbacks=phase2_callbacks,
     )
 
     print(f"\n{'='*60}")
@@ -241,11 +265,14 @@ def train_severity():
     # Confusion matrix
     try:
         from sklearn.metrics import confusion_matrix, classification_report
-        val_generator.reset()
-        predictions = model.predict(val_generator)
-        pred_classes = np.argmax(predictions, axis=1)
-        true_classes = val_generator.classes[:len(pred_classes)]
-        class_labels = list(raw_train_generator.class_indices.keys())
+        # For tf.data.Dataset, we need to collect true labels manually
+        true_classes = []
+        pred_classes = []
+        for images, labels_batch in val_generator:
+            preds = model.predict(images, verbose=0)
+            pred_classes.extend(np.argmax(preds, axis=1))
+            true_classes.extend(np.argmax(labels_batch.numpy(), axis=1))
+        class_labels = class_names
         
         print("\n=== Confusion Matrix ===")
         cm = confusion_matrix(true_classes, pred_classes)

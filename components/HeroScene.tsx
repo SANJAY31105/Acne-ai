@@ -128,8 +128,13 @@ function WireframeFace() {
         scroll.current = THREE.MathUtils.lerp(scroll.current, sh > 0 ? window.scrollY / sh : 0, 0.06);
         const t = state.clock.getElapsedTime();
         const s = scroll.current;
-        groupRef.current.rotation.y = Math.sin(t * 0.18) * 0.20 + s * 3.5;
-        groupRef.current.rotation.x = Math.sin(t * 0.12) * 0.04 + s * 0.8;
+        
+        // Base animation + scroll + interactive mouse tracking
+        const targetRotY = Math.sin(t * 0.18) * 0.20 + s * 3.5 + (state.pointer.x * 0.4);
+        const targetRotX = Math.sin(t * 0.12) * 0.04 + s * 0.8 + (-state.pointer.y * 0.3);
+
+        groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY, 0.05);
+        groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotX, 0.05);
         groupRef.current.position.y = Math.sin(t * 0.30) * 0.08 - s * 2;
     });
 
@@ -224,8 +229,13 @@ function LandmarkDots() {
         scroll.current = THREE.MathUtils.lerp(scroll.current, sh > 0 ? window.scrollY / sh : 0, 0.06);
         const t = state.clock.getElapsedTime();
         const s = scroll.current;
-        groupRef.current.rotation.y = Math.sin(t * 0.18) * 0.20 + s * 3.5;
-        groupRef.current.rotation.x = Math.sin(t * 0.12) * 0.04 + s * 0.8;
+        
+        // Base animation + scroll + interactive mouse tracking (matches WireframeFace)
+        const targetRotY = Math.sin(t * 0.18) * 0.20 + s * 3.5 + (state.pointer.x * 0.4);
+        const targetRotX = Math.sin(t * 0.12) * 0.04 + s * 0.8 + (-state.pointer.y * 0.3);
+
+        groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY, 0.05);
+        groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotX, 0.05);
         groupRef.current.position.y = Math.sin(t * 0.30) * 0.08 - s * 2;
     });
 

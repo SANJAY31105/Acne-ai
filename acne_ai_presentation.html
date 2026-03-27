@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACNE AI — Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Slide Container */
+        .slides {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 100px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Backgrounds */
+        .bg-dark {
+            background: linear-gradient(135deg, #0a0a1a 0%, #0f172a 50%, #1a1a3e 100%);
+        }
+
+        .bg-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+        }
+
+        .bg-emerald {
+            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
+        }
+
+        .bg-navy {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-purple {
+            background: linear-gradient(135deg, #1a1a3e 0%, #4c1d95 100%);
+        }
+
+        /* Decorative orbs */
+        .slide::before,
+        .slide::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .slide::before {
+            width: 400px;
+            height: 400px;
+            background: #10b981;
+            top: -100px;
+            right: -100px;
+        }
+
+        .slide::after {
+            width: 300px;
+            height: 300px;
+            background: #6366f1;
+            bottom: -80px;
+            left: -80px;
+        }
+
+        /* Typography */
+        .slide-number {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 500;
+        }
+
+        .brand {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        h2 span {
+            color: #10b981;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.6;
+            max-width: 700px;
+        }
+
+        .subtitle {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            margin-top: 8px;
+        }
+
+        /* Cards & Grids */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .card .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        /* Metric Cards */
+        .metric {
+            text-align: center;
+        }
+
+        .metric .value {
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric .label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Flow */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .flow-step {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .flow-arrow {
+            color: #10b981;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* Tech Pills */
+        .tech-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .pill.green {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 16px;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .data-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* List */
+        .feature-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .feature-list li {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter';
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.5s ease;
+            z-index: 100;
+        }
+
+        /* Slide-specific */
+        .title-slide {
+            text-align: center;
+        }
+
+        .left-align {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .two-col .col {}
+
+        /* Architecture */
+        .arch-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-family: 'Inter', monospace;
+            margin: 3px 0;
+        }
+
+        .arch-block.highlight {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- SLIDE 1: Title -->
+    <div class="slides">
+        <div class="slide bg-dark active title-slide" data-slide="1">
+            <span class="slide-number">01 / 15</span>
+            <h3>Introducing</h3>
+            <h1>ACNE <span>AI</span></h1>
+            <p class="subtitle">AI-Powered Acne Severity Analysis & Personalized Skincare Platform</p>
+            <div style="margin-top: 40px; display: flex; gap: 16px;">
+                <span class="pill green">Deep Learning</span>
+                <span class="pill green">Computer Vision</span>
+                <span class="pill green">Personalized Healthcare</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: The Problem -->
+        <div class="slide bg-navy left-align" data-slide="2">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">02 / 15</span>
+            <h3>The Problem</h3>
+            <h2>Acne affects <span>85%</span> of people aged 12-24</h2>
+            <div class="grid-3" style="margin-top: 24px;">
+                <div class="card">
+                    <div class="icon">💸</div>
+                    <h4>Expensive Consultations</h4>
+                    <p>Dermatologist visits cost ₹500–₹2000+ per session, limiting access for many</p>
+                </div>
+                <div class="card">
+                    <div class="icon">❓</div>
+                    <h4>Self-Diagnosis Errors</h4>
+                    <p>People misjudge severity and use wrong products, worsening their skin</p>
+                </div>
+                <div class="card">
+                    <div class="icon">⏳</div>
+                    <h4>Long Wait Times</h4>
+                    <p>Weeks to get a dermatologist appointment; skin worsens while waiting</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Our Solution -->
+        <div class="slide bg-gradient title-slide" data-slide="3">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">03 / 15</span>
+            <h3>Our Solution</h3>
+            <h2>Instant AI Diagnosis + Personalized Skincare</h2>
+            <p style="margin-top: 12px;">Upload a selfie → Get severity diagnosis in seconds → Receive a complete
+                skincare routine tailored to your skin type</p>
+            <div class="grid-3" style="margin-top: 32px;">
+                <div class="card" style="text-align:center;">
+                    <div class="icon">📸</div>
+                    <h4>1. Snap a Photo</h4>
+                    <p>Upload or use webcam</p>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div class="icon">🧠</div>
+                    <h4>2. AI Analyzes</h4>
+                    <p>Deep learning classifies severity</p>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div class="icon">💊</div>
+                    <h4>3. Get Your Plan</h4>
+                    <p>Personalized routines & products</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Tech Stack -->
+        <div class="slide bg-dark left-align" data-slide="4">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">04 / 15</span>
+            <h3>Technology Stack</h3>
+            <h2>Built with <span>Modern</span> Technologies</h2>
+            <div class="grid-2" style="margin-top: 24px;">
+                <div class="card">
+                    <h4 style="color:#34d399;">🖥️ Frontend</h4>
+                    <div class="tech-pills">
+                        <span class="pill">Next.js 16</span>
+                        <span class="pill">React 19</span>
+                        <span class="pill">TypeScript</span>
+                        <span class="pill">TailwindCSS 4</span>
+                        <span class="pill">Framer Motion</span>
+                        <span class="pill">Three.js</span>
+                        <span class="pill">Recharts</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="color:#34d399;">⚙️ Backend / ML</h4>
+                    <div class="tech-pills">
+                        <span class="pill">Python / Flask</span>
+                        <span class="pill">Keras 3</span>
+                        <span class="pill">PyTorch + CUDA</span>
+                        <span class="pill">EfficientNetV2-S</span>
+                        <span class="pill">MediaPipe</span>
+                        <span class="pill">OpenCV</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="color:#34d399;">☁️ Deployment</h4>
+                    <div class="tech-pills">
+                        <span class="pill">Vercel</span>
+                        <span class="pill">Render</span>
+                        <span class="pill">Docker</span>
+                        <span class="pill">GitHub CI/CD</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="color:#34d399;">📊 Data & Training</h4>
+                    <div class="tech-pills">
+                        <span class="pill">TensorFlow tf.data</span>
+                        <span class="pill">scikit-learn</span>
+                        <span class="pill">Kaggle Datasets</span>
+                        <span class="pill">Google Colab T4 GPU</span>
+                        <span class="pill">Mixup / CutMix</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: ML Pipeline -->
+        <div class="slide bg-navy title-slide" data-slide="5">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">05 / 15</span>
+            <h3>AI Pipeline</h3>
+            <h2>How the <span>Intelligence</span> Works</h2>
+            <div class="flow" style="margin-top: 32px;">
+                <div class="flow-step">📸 Photo Upload</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">🔍 Face Detection<br><small style="opacity:0.6">MediaPipe</small></div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">✂️ Face Crop</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">🧠 CNN Classifier<br><small style="opacity:0.6">EfficientNetV2-S</small></div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">📊 Severity Score</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">💊 Recommendations</div>
+            </div>
+            <p style="margin-top: 24px; font-size: 16px;">Non-face images are automatically rejected • Confidence
+                threshold prevents false predictions</p>
+        </div>
+
+        <!-- SLIDE 6: Model Architecture -->
+        <div class="slide bg-dark left-align" data-slide="6">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">06 / 15</span>
+            <h3>Model Architecture</h3>
+            <h2><span>EfficientNetV2-S</span> + Deep Head</h2>
+            <div style="margin-top: 24px; max-width: 600px;">
+                <div class="arch-block">📥 Input: 380 × 380 × 3 (Progressive Resizing: 300→380)</div>
+                <div class="arch-block highlight">🔀 Augmentation (Flip, Rotate, Zoom, Contrast, Mixup, CutMix)</div>
+                <div class="arch-block highlight">🧠 EfficientNetV2-S Backbone (ImageNet Pre-trained, 21.4M params)</div>
+                <div class="arch-block">🔲 GlobalAveragePooling2D</div>
+                <div class="arch-block">⚡ BatchNorm → Dropout(0.5) → Dense(1024, ReLU)</div>
+                <div class="arch-block">⚡ BatchNorm → Dropout(0.4) → Dense(512, ReLU)</div>
+                <div class="arch-block">⚡ BatchNorm → Dropout(0.3) → Dense(256, ReLU)</div>
+                <div class="arch-block">⚡ BatchNorm → Dropout(0.2)</div>
+                <div class="arch-block highlight">📤 Dense(3, Softmax) → Mild | Moderate | Severe</div>
+            </div>
+            <p style="margin-top: 16px; font-size: 15px; color: rgba(255,255,255,0.5);">21.4M params • AdamW optimizer • Label smoothing 0.15 • Mixed Precision FP16</p>
+        </div>
+
+        <!-- SLIDE 7: Training Strategy -->
+        <div class="slide bg-navy left-align" data-slide="7">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">07 / 15</span>
+            <h3>Training Strategy</h3>
+            <h2>2-Phase <span>Transfer Learning</span> + Progressive Resizing</h2>
+            <div class="grid-2" style="margin-top: 24px;">
+                <div class="card">
+                    <h4 style="color:#34d399;">Phase 1: Feature Extraction (300×300)</h4>
+                    <ul class="feature-list">
+                        <li>V2-S backbone completely frozen</li>
+                        <li>25 epochs at 300×300 (fast convergence)</li>
+                        <li>Mixup + CutMix augmentation</li>
+                        <li>Cosine warmup: 1e-6 → 1e-3</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 style="color:#34d399;">Phase 2: Fine-Tuning (380×380)</h4>
+                    <ul class="feature-list">
+                        <li>Top 70% of layers unfrozen</li>
+                        <li>Progressive resize to 380×380</li>
+                        <li>Up to 80 epochs (early stopping, patience=20)</li>
+                        <li>Cosine annealing: 1e-7 → 3e-5</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tech-pills" style="margin-top: 20px;">
+                <span class="pill green">Class Weighting</span>
+                <span class="pill green">Label Smoothing 0.15</span>
+                <span class="pill green">Mixup + CutMix</span>
+                <span class="pill green">AdamW Optimizer</span>
+                <span class="pill green">Google Colab T4</span>
+                <span class="pill green">Mixed Precision FP16</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Dataset -->
+        <div class="slide bg-dark left-align" data-slide="8">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">08 / 15</span>
+            <h3>Dataset</h3>
+            <h2><span>12,277</span> Images (Balanced + Oversampled)</h2>
+            <div class="grid-2" style="margin-top: 24px;">
+                <div>
+                    <table class="data-table">
+                        <tr>
+                            <th>Split</th>
+                            <th>Images</th>
+                        </tr>
+                        <tr>
+                            <td>Train</td>
+                            <td><strong>10,438</strong> (balanced)</td>
+                        </tr>
+                        <tr>
+                            <td>Validation</td>
+                            <td>921</td>
+                        </tr>
+                        <tr>
+                            <td>Test</td>
+                            <td>918</td>
+                        </tr>
+                    </table>
+                    <table class="data-table" style="margin-top: 16px;">
+                        <tr>
+                            <th>Class</th>
+                            <th>Original</th>
+                            <th>Balanced</th>
+                        </tr>
+                        <tr>
+                            <td>Mild</td>
+                            <td>3,613</td>
+                            <td>3,613</td>
+                        </tr>
+                        <tr>
+                            <td>Moderate</td>
+                            <td>3,425</td>
+                            <td>3,425</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#f87171;">Severe ⬆</td>
+                            <td style="color:#f87171;">1,814</td>
+                            <td style="color:#34d399;"><strong>3,400</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <div class="card">
+                        <h4 style="color:#34d399;">📦 Data Sources (Kaggle)</h4>
+                        <ul class="feature-list">
+                            <li>Acne Grading Classification Dataset</li>
+                            <li>ACNE04 — 1,457 clinical images</li>
+                            <li>Acne Dataset Image — 4,317 type-labeled</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="margin-top: 16px;">
+                        <h4 style="color:#fbbf24;">🔧 Balancing Strategy</h4>
+                        <ul class="feature-list">
+                            <li>Severe class oversampled with augmented copies</li>
+                            <li>PIL augmentations: flip, rotate, brightness, contrast, blur</li>
+                            <li>Class weights still applied during training</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: Results -->
+        <div class="slide bg-gradient title-slide" data-slide="9">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">09 / 15</span>
+            <h3>Model Performance</h3>
+            <h2>Production Model <span>Metrics</span></h2>
+            <div class="grid-4" style="margin-top: 32px;">
+                <div class="card metric">
+                    <div class="value">88.3%</div>
+                    <div class="label">Val Accuracy (B3)</div>
+                </div>
+                <div class="card metric">
+                    <div class="value">88%</div>
+                    <div class="label">F1 Score</div>
+                </div>
+                <div class="card metric">
+                    <div class="value">91.4%</div>
+                    <div class="label">Precision</div>
+                </div>
+                <div class="card metric">
+                    <div class="value">85.5%</div>
+                    <div class="label">Recall</div>
+                </div>
+            </div>
+            <p style="margin-top: 24px; font-size: 15px;">v5 model (EfficientNetV2-S + Mixup/CutMix + balanced data) training on Google Colab T4 GPU • Keras 3 +
+                PyTorch Backend • Mixed Precision FP16</p>
+        </div>
+
+        <!-- SLIDE 10: What the User Gets -->
+        <div class="slide bg-dark left-align" data-slide="10">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">10 / 15</span>
+            <h3>User Experience</h3>
+            <h2>What the User <span>Gets</span></h2>
+            <div class="grid-3" style="margin-top: 24px;">
+                <div class="card">
+                    <div class="icon">🎯</div>
+                    <h4>Severity Diagnosis</h4>
+                    <p>Mild, Moderate, or Severe classification with confidence %</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🧴</div>
+                    <h4>Products & Ingredients</h4>
+                    <p>Salicylic acid, Niacinamide, Retinol — matched to severity</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🌅</div>
+                    <h4>AM/PM Routines</h4>
+                    <p>Step-by-step morning & night skincare routines</p>
+                </div>
+                <div class="card">
+                    <div class="icon">✅</div>
+                    <h4>Do's & Don'ts</h4>
+                    <p>Personalized lifestyle advice for better skin</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📅</div>
+                    <h4>Expected Timeline</h4>
+                    <p>"4-6 weeks with consistent use" — sets realistic expectations</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📥</div>
+                    <h4>PDF Download</h4>
+                    <p>Download the full report as a PDF to share with your doctor</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: Frontend Features -->
+        <div class="slide bg-navy left-align" data-slide="11">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">11 / 15</span>
+            <h3>Frontend</h3>
+            <h2>Premium <span>UI/UX</span> Design</h2>
+            <div class="grid-2" style="margin-top: 24px;">
+                <div>
+                    <ul class="feature-list">
+                        <li><strong>3D Animated Landing Page</strong> — Three.js face model with post-processing</li>
+                        <li><strong>Glassmorphism Design</strong> — Frosted glass cards with gradient accents</li>
+                        <li><strong>Webcam + Upload</strong> — Dual input with face guide overlay</li>
+                        <li><strong>Scanning Animation</strong> — Premium overlay with status messages</li>
+                        <li><strong>Skin Type Quiz</strong> — Interactive quiz before analysis</li>
+                        <li><strong>Progress Tracker</strong> — SVG chart with trend analysis</li>
+                        <li><strong>Treatment Dashboard</strong> — AM/PM routines, products, lifestyle tips</li>
+                        <li><strong>Dark Navy Theme</strong> — #060a14 with emerald accents</li>
+                    </ul>
+                </div>
+                <div>
+                    <table class="data-table">
+                        <tr>
+                            <th>Page</th>
+                            <th>Route</th>
+                        </tr>
+                        <tr>
+                            <td>Landing Page (3D Hero)</td>
+                            <td><code>/</code></td>
+                        </tr>
+                        <tr>
+                            <td>Login</td>
+                            <td><code>/login</code></td>
+                        </tr>
+                        <tr>
+                            <td>Skin Type Quiz</td>
+                            <td><code>/skin-quiz</code></td>
+                        </tr>
+                        <tr>
+                            <td>Analyze</td>
+                            <td><code>/analyze</code></td>
+                        </tr>
+                        <tr>
+                            <td>Treatment Plan</td>
+                            <td><code>/treatments</code></td>
+                        </tr>
+                        <tr>
+                            <td>History + Progress</td>
+                            <td><code>/history</code></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: Architecture Diagram -->
+        <div class="slide bg-dark title-slide" data-slide="12">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">12 / 15</span>
+            <h3>System Architecture</h3>
+            <h2>End-to-End <span>Flow</span></h2>
+            <div style="margin-top: 32px; display: flex; gap: 20px; align-items: center;">
+                <div class="card" style="text-align:center; min-width: 140px;">
+                    <div class="icon">👤</div>
+                    <h4>User</h4>
+                    <p>Browser / Mobile</p>
+                </div>
+                <span class="flow-arrow" style="font-size:28px;">⟶</span>
+                <div class="card" style="text-align:center; min-width: 140px; border-color: rgba(16,185,129,0.3);">
+                    <div class="icon">🖥️</div>
+                    <h4>Next.js Frontend</h4>
+                    <p>Vercel</p>
+                </div>
+                <span class="flow-arrow" style="font-size:28px;">⟶</span>
+                <div class="card" style="text-align:center; min-width: 140px; border-color: rgba(16,185,129,0.3);">
+                    <div class="icon">⚙️</div>
+                    <h4>Flask API</h4>
+                    <p>Render (Docker)</p>
+                </div>
+                <span class="flow-arrow" style="font-size:28px;">⟶</span>
+                <div class="card" style="text-align:center; min-width: 140px;">
+                    <div class="icon">🔍</div>
+                    <h4>MediaPipe</h4>
+                    <p>Face Detection</p>
+                </div>
+                <span class="flow-arrow" style="font-size:28px;">⟶</span>
+                <div class="card" style="text-align:center; min-width: 140px; border-color: rgba(99,102,241,0.3);">
+                    <div class="icon">🧠</div>
+                    <h4>EfficientNetV2-S</h4>
+                    <p>Keras 3 / PyTorch</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: Future Scope -->
+        <div class="slide bg-purple left-align" data-slide="13">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">13 / 15</span>
+            <h3>V5 Improvements</h3>
+            <h2>What We <span>Upgraded</span></h2>
+            <div class="grid-3" style="margin-top: 24px;">
+                <div class="card">
+                    <div class="icon">🧠</div>
+                    <h4>EfficientNetV2-S</h4>
+                    <p>Faster training, better fine-tuning than B3/B4. 21.4M params.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🔀</div>
+                    <h4>Mixup + CutMix</h4>
+                    <p>Advanced augmentation that blends images for +3-5% accuracy gain</p>
+                </div>
+                <div class="card">
+                    <div class="icon">⚖️</div>
+                    <h4>Balanced Dataset</h4>
+                    <p>Severe class oversampled from 1,814 → 3,400 to fix class imbalance</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📐</div>
+                    <h4>Progressive Resize</h4>
+                    <p>Train at 300×300 first, then fine-tune at 380×380 for better features</p>
+                </div>
+                <div class="card">
+                    <div class="icon">💊</div>
+                    <h4>Treatments Page</h4>
+                    <p>Full skincare dashboard with AM/PM routines, products & lifestyle tips</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📈</div>
+                    <h4>Progress Tracking</h4>
+                    <p>SVG timeline chart with trend analysis and per-scan comparison</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: Thank You -->
+        <!-- SLIDE 14: Future Scope -->
+        <div class="slide bg-purple left-align" data-slide="14">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">14 / 15</span>
+            <h3>Future Scope</h3>
+            <h2>What's <span>Next</span></h2>
+            <div class="grid-2" style="margin-top: 24px;">
+                <div class="card">
+                    <div class="icon">📱</div>
+                    <h4>Mobile App</h4>
+                    <p>React Native app for on-the-go scanning with offline inference</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🌐</div>
+                    <h4>Client-Side AI</h4>
+                    <p>TensorFlow.js / ONNX — run inference in browser, no backend</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🔬</div>
+                    <h4>Test-Time Augmentation</h4>
+                    <p>5-pass TTA for free +1-2% accuracy boost at inference time</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🩺</div>
+                    <h4>Derm Integration</h4>
+                    <p>Connect users with real dermatologists based on severity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: Thank You -->
+        <div class="slide bg-emerald title-slide" data-slide="15">
+            <span class="brand">ACNE AI</span>
+            <span class="slide-number">15 / 15</span>
+            <h1 style="font-size: 64px; -webkit-text-fill-color: #fff; background: none;">Thank You 🙏</h1>
+            <p class="subtitle" style="color: rgba(255,255,255,0.8); font-size: 24px; margin-top: 16px;">AI-Powered
+                Skincare for Everyone</p>
+            <div style="margin-top: 40px; display: flex; gap: 32px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 36px; font-weight: 900;">12,277</div>
+                    <div style="font-size: 14px; opacity: 0.7;">Images Trained</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 36px; font-weight: 900;">88.3%</div>
+                    <div style="font-size: 14px; opacity: 0.7;">Accuracy (v4)</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 36px; font-weight: 900;">6</div>
+                    <div style="font-size: 14px; opacity: 0.7;">App Pages</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 36px; font-weight: 900;">< 3s</div>
+                    <div style="font-size: 14px; opacity: 0.7;">Inference Time</div>
+                </div>
+            </div>
+            <p style="margin-top: 40px; font-size: 16px; opacity: 0.6;">Press F11 for fullscreen • Use ← → arrow
+                keys to navigate</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <button onclick="prevSlide()">← Prev</button>
+            <button onclick="nextSlide()">Next →</button>
+        </div>
+
+        <script>
+            let current = 1;
+            const total = 15;
+
+            function showSlide(n) {
+                document.querySelectorAll('.slide').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+                const slide = document.querySelector(`[data-slide="${n}"]`);
+                if (slide) { slide.style.display = 'flex'; setTimeout(() => slide.classList.add('active'), 10); }
+                document.getElementById('progressBar').style.width = `${(n / total) * 100}%`;
+            }
+
+            function nextSlide() { if (current < total) { current++; showSlide(current); } }
+            function prevSlide() { if (current > 1) { current--; showSlide(current); } }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+            });
+
+            showSlide(1);
+        </script>
+
+</body>
+
+</html>

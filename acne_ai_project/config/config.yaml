@@ -1,7 +1,7 @@
 project_name: "Acne AI - Intelligent Acne Detection System"
 
 data:
-  image_size: [300, 300]
+  image_size: [380, 380]
   channels: 3
   batch_size: 16
   train_split: 0.7
@@ -21,12 +21,12 @@ augmentation:
   vertical_flip: false
 
 model:
-  backbone: "EfficientNetB3"
+  backbone: "EfficientNetB4"
   dropout_rate: 0.5
   learning_rate_frozen: 0.001
   learning_rate_finetune: 0.00003
-  epochs_frozen: 15
-  epochs_finetune: 60
+  epochs_frozen: 20
+  epochs_finetune: 100
   optimizer: "adam"
   loss: "categorical_crossentropy"
 

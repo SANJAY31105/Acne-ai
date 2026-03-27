@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRS — ACNE AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fdfdfd;
+            color: #1a1a2e;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 40px 80px;
+        }
+
+        /* Header */
+        .doc-header {
+            text-align: center;
+            padding: 50px 0 40px;
+            border-bottom: 3px solid #10b981;
+            margin-bottom: 40px;
+        }
+        .doc-header h1 {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .doc-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 4px;
+        }
+        .doc-header p {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 12px;
+        }
+
+        /* Section Headers */
+        h2.section {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 48px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        h2.section span {
+            color: #10b981;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 28px;
+            margin-bottom: 6px;
+        }
+
+        h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #475569;
+            margin-top: 20px;
+            margin-bottom: 4px;
+        }
+
+        p, li {
+            font-size: 14.5px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+        li { margin-bottom: 4px; }
+
+        /* Separator */
+        hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 32px 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 20px;
+            font-size: 14px;
+        }
+        th {
+            background: #0f172a;
+            color: #fff;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+        }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* FR boxes */
+        .req-box {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 12px 18px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .req-box strong { color: #059669; }
+
+        .nfr-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 18px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .nfr-box strong { color: #2563eb; }
+
+        /* Definition list */
+        .def-term {
+            font-weight: 700;
+            color: #0f172a;
+            display: inline;
+        }
+        .def-desc {
+            color: #475569;
+            display: inline;
+        }
+
+        /* Architecture block */
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .arch-step {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+        .arch-step.highlight {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #059669;
+        }
+        .arch-arrow {
+            color: #10b981;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Tech pills */
+        .pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0 16px;
+        }
+        .pill {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #475569;
+        }
+        .pill.green {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #059669;
+        }
+
+        /* Page break for printing */
+        @media print {
+            .page-break { page-break-before: always; }
+            body { padding: 40px 30px; }
+        }
+
+        /* TOC */
+        .toc {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px 32px;
+            margin: 24px 0 32px;
+        }
+        .toc h3 {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+        .toc ol {
+            margin-left: 20px;
+        }
+        .toc li {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 2px;
+        }
+        .toc li a {
+            color: #475569;
+            text-decoration: none;
+        }
+        .toc li a:hover { color: #10b981; }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="doc-header">
+        <h1>Software Requirements Specification (SRS)</h1>
+        <h2>AI-Based Acne Detection and Severity Classification System</h2>
+        <p>Version 2.0 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; ACNE AI Project</p>
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ol>
+            <li>Introduction</li>
+            <li>Overall Description</li>
+            <li>Functional Requirements</li>
+            <li>Non-Functional Requirements</li>
+            <li>External Interface Requirements</li>
+            <li>System Models</li>
+            <li>System Architecture & Technology Stack</li>
+            <li>Appendix</li>
+        </ol>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 1. INTRODUCTION -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>1.</span> Introduction</h2>
+
+    <h3>1.1 Purpose</h3>
+    <p>
+        The purpose of this document is to describe the requirements and expected functionality of the AI-Based Acne Detection and Severity Classification System (ACNE AI). This document provides a detailed explanation of the system's features, constraints, and performance expectations. It serves as a guideline for developers, researchers, and stakeholders involved in the development and evaluation of the system.
+    </p>
+
+    <h3>1.2 Scope</h3>
+    <p>
+        The proposed system assists users in identifying acne conditions through automated image analysis. Using deep learning techniques, the system examines facial images and determines the presence and severity of acne, categorizing it into three levels: <strong>Mild</strong>, <strong>Moderate</strong>, and <strong>Severe</strong>. The system provides personalized skincare recommendations including morning/evening routines, product suggestions, key ingredients, lifestyle tips, and expected treatment timelines. It is useful for individuals seeking preliminary skin analysis as well as dermatology professionals who want technological assistance in assessing skin conditions.
+    </p>
+
+    <h3>1.3 Definitions</h3>
+    <ul>
+        <li><span class="def-term">Acne:</span> <span class="def-desc">A skin disorder that occurs when pores become blocked with oil, bacteria, and dead skin cells, resulting in pimples, blackheads, whiteheads, or cysts.</span></li>
+        <li><span class="def-term">Severity Classification:</span> <span class="def-desc">The categorization of acne into Mild, Moderate, or Severe levels based on visual analysis.</span></li>
+        <li><span class="def-term">Deep Learning:</span> <span class="def-desc">A subset of machine learning that uses deep neural networks to learn hierarchical patterns from data.</span></li>
+        <li><span class="def-term">Transfer Learning:</span> <span class="def-desc">A technique where a model pre-trained on a large dataset (e.g., ImageNet) is fine-tuned on a domain-specific dataset.</span></li>
+        <li><span class="def-term">EfficientNetV2-S:</span> <span class="def-desc">A convolutional neural network architecture optimized for training speed and parameter efficiency, used as the backbone model.</span></li>
+        <li><span class="def-term">Face Detection:</span> <span class="def-desc">The process of identifying and locating human faces within an image using MediaPipe.</span></li>
+        <li><span class="def-term">Mixup / CutMix:</span> <span class="def-desc">Advanced data augmentation techniques that blend or splice images together to improve model generalization.</span></li>
+        <li><span class="def-term">Image Dataset:</span> <span class="def-desc">A collection of labeled images used to train and test machine learning models.</span></li>
+    </ul>
+
+    <h3>1.4 Overview</h3>
+    <p>
+        This document presents the requirements and design considerations for the ACNE AI system. It includes an overall description of the system, functional and non-functional requirements, interface specifications, system models, architecture details, and references.
+    </p>
+
+    <hr>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 2. OVERALL DESCRIPTION -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>2.</span> Overall Description</h2>
+
+    <h3>2.1 Product Perspective</h3>
+    <p>
+        ACNE AI is designed as a full-stack intelligent web application that integrates computer vision and deep learning with a modern reactive frontend. It accepts facial images from users via webcam capture or file upload, processes them through a face detection pipeline (MediaPipe) and a trained convolutional neural network (EfficientNetV2-S), and provides comprehensive skin analysis results including severity diagnosis, confidence scores, and personalized treatment plans.
+    </p>
+
+    <h3>2.2 Product Features</h3>
+    <p>The major capabilities of the system include:</p>
+    <ul>
+        <li>Uploading facial images via webcam capture or file upload for analysis</li>
+        <li>Automatic face detection and validation (non-face images are rejected)</li>
+        <li>Processing images through a trained deep learning model to classify acne severity</li>
+        <li>Classifying acne severity into three levels: Mild, Moderate, Severe with confidence percentages</li>
+        <li>Generating personalized skincare recommendations (morning/evening routines, products, ingredients, do's & don'ts)</li>
+        <li>Interactive skin type quiz to personalize analysis</li>
+        <li>Progress tracking with visual timeline charts and trend analysis</li>
+        <li>Dedicated treatment plan dashboard personalized by severity and skin type</li>
+        <li>Downloadable PDF/image reports and share functionality</li>
+        <li>Scan history storage with per-entry trend comparison</li>
+    </ul>
+
+    <h3>2.3 User Classes and Characteristics</h3>
+    <table>
+        <tr>
+            <th>User Type</th>
+            <th>Description</th>
+            <th>Technical Skill</th>
+        </tr>
+        <tr>
+            <td><strong>General Users</strong></td>
+            <td>Individuals interested in checking their skin condition through automated AI analysis and receiving skincare recommendations.</td>
+            <td>Low — Basic smartphone/browser usage</td>
+        </tr>
+        <tr>
+            <td><strong>Dermatology Professionals</strong></td>
+            <td>Experts who may use the system as a supportive tool for preliminary skin assessment before in-person consultation.</td>
+            <td>Moderate — Clinical domain knowledge</td>
+        </tr>
+        <tr>
+            <td><strong>Administrator / Developer</strong></td>
+            <td>Responsible for managing the system, retraining models, updating datasets, and maintaining deployment infrastructure.</td>
+            <td>High — ML / DevOps expertise</td>
+        </tr>
+    </table>
+
+    <h3>2.4 Constraints</h3>
+    <ul>
+        <li>The accuracy of results depends on the quality, lighting, and angle of the uploaded facial images.</li>
+        <li>The system requires a properly trained and validated deep learning model deployed on the backend server.</li>
+        <li>Internet access is required as the ML inference runs on a cloud-hosted Flask API.</li>
+        <li>The system processes only human facial images; non-face uploads are rejected via MediaPipe face detection.</li>
+        <li>Model predictions are probabilistic and should not replace professional medical diagnosis.</li>
+    </ul>
+
+    <h3>2.5 Assumptions</h3>
+    <ul>
+        <li>Users will provide clear, well-lit, front-facing facial images.</li>
+        <li>The training dataset (12,277 images across 3 severity classes) contains sufficient examples of different acne conditions.</li>
+        <li>The system will be operated on modern browsers (Chrome, Firefox, Safari, Edge) with JavaScript enabled.</li>
+        <li>Users have a camera-equipped device for webcam-based capture.</li>
+        <li>The backend API server is available and responsive during usage.</li>
+    </ul>
+
+    <hr class="page-break">
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 3. FUNCTIONAL REQUIREMENTS -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>3.</span> Functional Requirements</h2>
+
+    <div class="req-box">
+        <strong>FR-01:</strong> The system shall allow users to upload facial images for analysis via file upload (drag-and-drop, file picker) or webcam capture with a face guide overlay.
+    </div>
+    <div class="req-box">
+        <strong>FR-02:</strong> The system shall perform image preprocessing including conversion to JPEG format, resizing to 380×380 pixels, and pixel normalization to [0, 1] range.
+    </div>
+    <div class="req-box">
+        <strong>FR-03:</strong> The system shall detect the presence of a human face in the uploaded image using MediaPipe Face Detection and reject non-face images with an appropriate error message.
+    </div>
+    <div class="req-box">
+        <strong>FR-04:</strong> The system shall crop the detected face region and pass it through the trained EfficientNetV2-S deep learning model for severity classification.
+    </div>
+    <div class="req-box">
+        <strong>FR-05:</strong> The system shall classify the severity level of acne into one of three categories: <strong>Mild</strong>, <strong>Moderate</strong>, or <strong>Severe</strong>, with a confidence percentage.
+    </div>
+    <div class="req-box">
+        <strong>FR-06:</strong> The system shall display the detection results including severity level, confidence score, skin type, urgency assessment, and a visual severity gauge.
+    </div>
+    <div class="req-box">
+        <strong>FR-07:</strong> The system shall generate personalized skincare recommendations including: morning routine, evening routine, key ingredients, product suggestions, do's & don'ts, and expected treatment timeline.
+    </div>
+    <div class="req-box">
+        <strong>FR-08:</strong> The system shall provide a skin type quiz to determine the user's skin type (Oily, Dry, Combination, Sensitive, Normal) before analysis for personalized results.
+    </div>
+    <div class="req-box">
+        <strong>FR-09:</strong> The system shall store scan history (date, severity, confidence) in the browser's local storage and display it in a chronological list on the History page.
+    </div>
+    <div class="req-box">
+        <strong>FR-10:</strong> The system shall provide a visual progress tracker with an SVG timeline chart, trend analysis (Improving / Stable / Getting Worse), and per-scan comparison.
+    </div>
+    <div class="req-box">
+        <strong>FR-11:</strong> The system shall allow users to download analysis results as a PNG report or share via the Web Share API.
+    </div>
+    <div class="req-box">
+        <strong>FR-12:</strong> The system shall provide a dedicated Treatment Plan page displaying severity-personalized AM/PM routines with specific product recommendations, key ingredients, lifestyle tips, and items to avoid.
+    </div>
+    <div class="req-box">
+        <strong>FR-13:</strong> The system shall require user authentication (login) before accessing the analysis and history features.
+    </div>
+    <div class="req-box">
+        <strong>FR-14:</strong> The system shall allow administrators to retrain and update the model using new datasets and deploy updated weights.
+    </div>
+
+    <hr>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 4. NON-FUNCTIONAL REQUIREMENTS -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>4.</span> Non-Functional Requirements</h2>
+
+    <h3>4.1 Performance</h3>
+    <div class="nfr-box">
+        <strong>NFR-01:</strong> The system shall process and return analysis results within <strong>3 seconds</strong> of image submission under normal server load.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-02:</strong> The frontend shall display smooth scanning animations (60fps) during the analysis wait period to maintain user engagement.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-03:</strong> The deep learning model shall achieve a validation accuracy of at least <strong>88%</strong> on the test dataset.
+    </div>
+
+    <h3>4.2 Security</h3>
+    <div class="nfr-box">
+        <strong>NFR-04:</strong> User images shall be processed in-memory on the server and not permanently stored, ensuring privacy. Images are discarded after inference.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-05:</strong> Scan history data shall be stored locally in the user's browser (localStorage) and never transmitted to external servers.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-06:</strong> The API shall validate all incoming requests and reject malformed or oversized payloads.
+    </div>
+
+    <h3>4.3 Usability</h3>
+    <div class="nfr-box">
+        <strong>NFR-07:</strong> The system interface shall follow a premium dark-themed design (background: #060a14) and be accessible on mobile, tablet, and desktop devices with responsive layouts.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-08:</strong> The system shall provide clear error messages when face detection fails or the analysis encounters issues.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-09:</strong> Navigation between pages (Landing, Quiz, Analyze, Treatments, History) shall be intuitive with a consistent header and routing.
+    </div>
+
+    <h3>4.4 Reliability</h3>
+    <div class="nfr-box">
+        <strong>NFR-10:</strong> The system shall provide consistent classification results for the same input image across multiple analyses.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-11:</strong> The system shall implement proper error handling at both frontend and backend levels with fallback states.
+    </div>
+    <div class="nfr-box">
+        <strong>NFR-12:</strong> The backend API shall include health-check endpoints to monitor service availability.
+    </div>
+
+    <h3>4.5 Scalability</h3>
+    <div class="nfr-box">
+        <strong>NFR-13:</strong> The system architecture shall support independent scaling of the frontend (Vercel) and backend (Render/Docker) components.
+    </div>
+
+    <hr class="page-break">
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 5. EXTERNAL INTERFACE REQUIREMENTS -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>5.</span> External Interface Requirements</h2>
+
+    <h3>5.1 User Interface</h3>
+    <p>
+        The application provides a premium, dark-themed responsive web interface built with Next.js 16 and React 19. The UI includes:
+    </p>
+    <table>
+        <tr>
+            <th>Page</th>
+            <th>Route</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Landing Page</td>
+            <td><code>/</code></td>
+            <td>Animated hero section with gradient orbs, staggered text animations (Framer Motion), "How It Works" steps, and feature cards</td>
+        </tr>
+        <tr>
+            <td>Login</td>
+            <td><code>/login</code></td>
+            <td>User authentication gate</td>
+        </tr>
+        <tr>
+            <td>Skin Type Quiz</td>
+            <td><code>/skin-quiz</code></td>
+            <td>Multi-step interactive quiz to determine skin type for personalized results</td>
+        </tr>
+        <tr>
+            <td>Analyze</td>
+            <td><code>/analyze</code></td>
+            <td>Webcam with face guide overlay + file upload, scanning animation with status messages, results view with severity gauge</td>
+        </tr>
+        <tr>
+            <td>Treatment Plan</td>
+            <td><code>/treatments</code></td>
+            <td>Personalized AM/PM routines with product names, key ingredients, lifestyle tips, avoid list</td>
+        </tr>
+        <tr>
+            <td>History</td>
+            <td><code>/history</code></td>
+            <td>SVG progress chart, trend analysis, chronological scan list with severity indicators and confidence bars</td>
+        </tr>
+    </table>
+
+    <h3>5.2 Hardware Interface</h3>
+    <p>
+        Users access the system through devices such as smartphones, tablets, or computers equipped with:
+    </p>
+    <ul>
+        <li>A camera (for webcam-based capture via WebRTC)</li>
+        <li>A modern web browser with JavaScript support</li>
+        <li>Minimum screen resolution of 320px width (mobile responsive)</li>
+    </ul>
+    <p>
+        The backend ML inference server requires:
+    </p>
+    <ul>
+        <li>Server with Python 3.10+ runtime</li>
+        <li>GPU access for model training (Google Colab T4 / NVIDIA RTX 4060)</li>
+        <li>CPU-based inference capability for deployment (Render/Docker)</li>
+    </ul>
+
+    <h3>5.3 Software Interface</h3>
+    <table>
+        <tr>
+            <th>Component</th>
+            <th>Technology</th>
+        </tr>
+        <tr>
+            <td>Frontend Framework</td>
+            <td>Next.js 16, React 19, TypeScript</td>
+        </tr>
+        <tr>
+            <td>Styling</td>
+            <td>TailwindCSS 4, Framer Motion</td>
+        </tr>
+        <tr>
+            <td>Backend API</td>
+            <td>Python Flask</td>
+        </tr>
+        <tr>
+            <td>Deep Learning Framework</td>
+            <td>Keras 3 with PyTorch backend, Mixed Precision FP16</td>
+        </tr>
+        <tr>
+            <td>Model Architecture</td>
+            <td>EfficientNetV2-S (21.4M parameters)</td>
+        </tr>
+        <tr>
+            <td>Face Detection</td>
+            <td>MediaPipe Face Detection</td>
+        </tr>
+        <tr>
+            <td>Image Processing</td>
+            <td>OpenCV, PIL (Pillow)</td>
+        </tr>
+        <tr>
+            <td>Data Pipeline</td>
+            <td>TensorFlow tf.data with AUTOTUNE</td>
+        </tr>
+        <tr>
+            <td>Deployment</td>
+            <td>Vercel (frontend), Render with Docker (backend)</td>
+        </tr>
+    </table>
+
+    <h3>5.4 Communication Interface</h3>
+    <p>
+        The frontend communicates with the backend via RESTful HTTP API calls:
+    </p>
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>/api/predict</code></td>
+            <td>POST</td>
+            <td>Accepts multipart/form-data with image file and skin_type parameter. Returns JSON with severity, confidence, and recommendations.</td>
+        </tr>
+    </table>
+    <p>
+        The Next.js API route (<code>/api/predict</code>) proxies requests to the Flask backend deployed at a configurable URL. All communication uses HTTPS in production.
+    </p>
+
+    <hr class="page-break">
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 6. SYSTEM MODELS -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>6.</span> System Models</h2>
+
+    <h3>6.1 Use Case List</h3>
+    <table>
+        <tr>
+            <th>Use Case</th>
+            <th>Actor</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>User Authentication</td>
+            <td>General User</td>
+            <td>User logs in to access analysis features</td>
+        </tr>
+        <tr>
+            <td>Skin Type Quiz</td>
+            <td>General User</td>
+            <td>User completes a quiz to determine skin type for personalized results</td>
+        </tr>
+        <tr>
+            <td>Image Upload / Capture</td>
+            <td>General User</td>
+            <td>User submits a facial image via file upload or webcam capture</td>
+        </tr>
+        <tr>
+            <td>Face Detection & Validation</td>
+            <td>System</td>
+            <td>System detects human face using MediaPipe and rejects non-face images</td>
+        </tr>
+        <tr>
+            <td>Image Preprocessing</td>
+            <td>System</td>
+            <td>System crops face, resizes to 380×380, and normalizes pixel values</td>
+        </tr>
+        <tr>
+            <td>Acne Severity Classification</td>
+            <td>System</td>
+            <td>EfficientNetV2-S model classifies severity as Mild, Moderate, or Severe</td>
+        </tr>
+        <tr>
+            <td>Recommendation Generation</td>
+            <td>System</td>
+            <td>System generates personalized skincare plan based on severity and skin type</td>
+        </tr>
+        <tr>
+            <td>Result Display</td>
+            <td>General User</td>
+            <td>User views severity gauge, confidence score, routines, and product recommendations</td>
+        </tr>
+        <tr>
+            <td>Report Download / Share</td>
+            <td>General User</td>
+            <td>User downloads or shares the analysis report as an image</td>
+        </tr>
+        <tr>
+            <td>View Treatment Plan</td>
+            <td>General User</td>
+            <td>User accesses the dedicated treatment dashboard with AM/PM routines</td>
+        </tr>
+        <tr>
+            <td>View Scan History</td>
+            <td>General User</td>
+            <td>User views past scan results, progress chart, and trend analysis</td>
+        </tr>
+        <tr>
+            <td>Model Retraining</td>
+            <td>Administrator</td>
+            <td>Admin retrains the model with updated datasets and deploys new weights</td>
+        </tr>
+    </table>
+
+    <h3>6.2 Use Case Descriptions</h3>
+
+    <h4>UC-01: Image Upload / Capture</h4>
+    <p>The user navigates to the Analyze page and either opens the webcam (with a face guide oval overlay) or uploads an image file. The captured/uploaded image is displayed in a preview area. The user can retake or re-upload before proceeding.</p>
+
+    <h4>UC-02: Face Detection & Validation</h4>
+    <p>Upon clicking "Analyze Skin," the image is sent to the Flask API. MediaPipe Face Detection verifies the presence of a human face. If no face is detected, an error status is returned and displayed to the user. If a face is detected, it is cropped for model input.</p>
+
+    <h4>UC-03: Acne Severity Classification</h4>
+    <p>The cropped face image is resized to 380×380 pixels, normalized, and passed through the EfficientNetV2-S model. The model outputs softmax probabilities for three classes (Mild, Moderate, Severe). The class with the highest probability becomes the predicted severity with the corresponding confidence percentage.</p>
+
+    <h4>UC-04: Recommendation Generation</h4>
+    <p>Based on the predicted severity and the user's skin type (from the quiz), the system generates a comprehensive skincare plan including: morning routine, evening routine, product recommendations with key ingredients, do's and don'ts, type-specific treatments, and expected timeline for improvement.</p>
+
+    <h4>UC-05: Progress Tracking</h4>
+    <p>Each scan result (severity, confidence, timestamp) is saved to localStorage. The History page renders an SVG-based line chart plotting severity over time, with dots colored by severity level. Statistics include total scans, average severity, and trend direction (Improving/Stable/Getting Worse).</p>
+
+    <hr>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 7. ARCHITECTURE & TECH STACK -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>7.</span> System Architecture & Technology Stack</h2>
+
+    <h3>7.1 System Architecture Flow</h3>
+    <div class="arch-flow">
+        <div class="arch-step">👤 User (Browser)</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-step highlight">Next.js Frontend (Vercel)</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-step highlight">Flask API (Render/Docker)</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-step">MediaPipe (Face Detection)</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-step highlight">EfficientNetV2-S (Keras 3 / PyTorch)</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-step">Results + Recommendations</div>
+    </div>
+
+    <h3>7.2 Model Architecture</h3>
+    <p>The deep learning pipeline uses a 2-phase transfer learning strategy with progressive resizing:</p>
+    <table>
+        <tr><th>Layer</th><th>Details</th></tr>
+        <tr><td>Input</td><td>380 × 380 × 3 (Progressive Resizing: 300→380)</td></tr>
+        <tr><td>Augmentation</td><td>Flip, Rotate, Zoom, Contrast, Mixup, CutMix</td></tr>
+        <tr><td>Backbone</td><td>EfficientNetV2-S (ImageNet pre-trained, 21.4M params)</td></tr>
+        <tr><td>Pooling</td><td>GlobalAveragePooling2D</td></tr>
+        <tr><td>Head Layer 1</td><td>BatchNorm → Dropout(0.5) → Dense(1024, ReLU)</td></tr>
+        <tr><td>Head Layer 2</td><td>BatchNorm → Dropout(0.4) → Dense(512, ReLU)</td></tr>
+        <tr><td>Head Layer 3</td><td>BatchNorm → Dropout(0.3) → Dense(256, ReLU)</td></tr>
+        <tr><td>Output</td><td>BatchNorm → Dropout(0.2) → Dense(3, Softmax) → Mild | Moderate | Severe</td></tr>
+    </table>
+
+    <h3>7.3 Training Strategy</h3>
+    <table>
+        <tr><th>Parameter</th><th>Phase 1: Feature Extraction</th><th>Phase 2: Fine-Tuning</th></tr>
+        <tr><td>Resolution</td><td>300 × 300</td><td>380 × 380</td></tr>
+        <tr><td>Backbone</td><td>Completely frozen</td><td>Top 70% unfrozen</td></tr>
+        <tr><td>Epochs</td><td>25</td><td>80 (early stopping, patience=20)</td></tr>
+        <tr><td>Learning Rate</td><td>Cosine warmup: 1e-6 → 1e-3</td><td>Cosine annealing: 1e-7 → 3e-5</td></tr>
+        <tr><td>Optimizer</td><td>AdamW (weight decay)</td><td>AdamW (weight decay)</td></tr>
+        <tr><td>Augmentation</td><td>Mixup + CutMix + standard</td><td>Mixup + CutMix + standard</td></tr>
+        <tr><td>Precision</td><td>Mixed FP16</td><td>Mixed FP16</td></tr>
+    </table>
+
+    <h3>7.4 Dataset</h3>
+    <table>
+        <tr><th>Split</th><th>Images</th></tr>
+        <tr><td>Train (Balanced)</td><td><strong>10,438</strong></td></tr>
+        <tr><td>Validation</td><td>921</td></tr>
+        <tr><td>Test</td><td>918</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>12,277</strong></td></tr>
+    </table>
+    <table>
+        <tr><th>Class</th><th>Original Count</th><th>Balanced Count</th></tr>
+        <tr><td>Mild</td><td>3,613</td><td>3,613</td></tr>
+        <tr><td>Moderate</td><td>3,425</td><td>3,425</td></tr>
+        <tr><td>Severe (oversampled)</td><td>1,814</td><td><strong>3,400</strong></td></tr>
+    </table>
+    <p><strong>Sources:</strong> Acne Grading Classification Dataset, ACNE04 (1,457 clinical images), and Acne Dataset Image (4,317 type-labeled images) — all sourced from Kaggle.</p>
+
+    <h3>7.5 Technology Stack</h3>
+    <h4>Frontend</h4>
+    <div class="pills">
+        <span class="pill green">Next.js 16</span>
+        <span class="pill green">React 19</span>
+        <span class="pill green">TypeScript</span>
+        <span class="pill green">TailwindCSS 4</span>
+        <span class="pill green">Framer Motion</span>
+        <span class="pill">Lucide Icons</span>
+        <span class="pill">react-webcam</span>
+        <span class="pill">html2canvas-pro</span>
+    </div>
+    <h4>Backend / ML</h4>
+    <div class="pills">
+        <span class="pill green">Python 3.10+</span>
+        <span class="pill green">Flask</span>
+        <span class="pill green">Keras 3 (PyTorch backend)</span>
+        <span class="pill green">EfficientNetV2-S</span>
+        <span class="pill green">MediaPipe</span>
+        <span class="pill green">OpenCV</span>
+        <span class="pill">NumPy</span>
+        <span class="pill">scikit-learn</span>
+    </div>
+    <h4>Deployment & DevOps</h4>
+    <div class="pills">
+        <span class="pill green">Vercel</span>
+        <span class="pill green">Render</span>
+        <span class="pill green">Docker</span>
+        <span class="pill">GitHub CI/CD</span>
+        <span class="pill">Google Colab (T4 GPU training)</span>
+    </div>
+
+    <hr class="page-break">
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- 8. APPENDIX -->
+    <!-- ════════════════════════════════════════ -->
+    <h2 class="section"><span>8.</span> Appendix</h2>
+
+    <h3>8.1 Glossary</h3>
+    <table>
+        <tr><th>Term</th><th>Definition</th></tr>
+        <tr><td>Artificial Intelligence (AI)</td><td>Technology that enables machines to perform tasks requiring human-like intelligence.</td></tr>
+        <tr><td>Convolutional Neural Network (CNN)</td><td>A class of deep neural networks specialized for analyzing visual data.</td></tr>
+        <tr><td>Transfer Learning</td><td>Reusing a pre-trained model on a new, related task to achieve better performance with less data.</td></tr>
+        <tr><td>EfficientNetV2</td><td>A family of CNN architectures that achieve state-of-the-art accuracy with improved training speed through progressive learning and fused MBConv operations.</td></tr>
+        <tr><td>Mixup</td><td>An augmentation that creates virtual training examples by linearly interpolating pairs of images and their labels.</td></tr>
+        <tr><td>CutMix</td><td>An augmentation that replaces a rectangular region of one image with a patch from another, mixing labels proportionally.</td></tr>
+        <tr><td>MediaPipe</td><td>Google's open-source framework for building multimodal ML pipelines, used here for face detection.</td></tr>
+        <tr><td>Label Smoothing</td><td>A regularization technique that prevents the model from becoming overconfident by softening target labels.</td></tr>
+        <tr><td>Progressive Resizing</td><td>Training at a smaller resolution first, then fine-tuning at a larger resolution for improved feature learning.</td></tr>
+        <tr><td>Test-Time Augmentation (TTA)</td><td>Applying multiple augmentations at inference and averaging predictions for improved accuracy.</td></tr>
+    </table>
+
+    <h3>8.2 References</h3>
+    <ul>
+        <li>Tan, M. & Le, Q. (2021). "EfficientNetV2: Smaller Models and Faster Training." <em>ICML 2021.</em></li>
+        <li>Zhang, H. et al. (2018). "mixup: Beyond Empirical Risk Minimization." <em>ICLR 2018.</em></li>
+        <li>Yun, S. et al. (2019). "CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features." <em>ICCV 2019.</em></li>
+        <li>Lugaresi, C. et al. (2019). "MediaPipe: A Framework for Building Perception Pipelines." <em>Google Research.</em></li>
+        <li>IEEE Xplore Digital Library — <a href="https://ieeexplore.ieee.org">https://ieeexplore.ieee.org</a></li>
+        <li>Google Scholar — <a href="https://scholar.google.com">https://scholar.google.com</a></li>
+        <li>ScienceDirect — <a href="https://www.sciencedirect.com">https://www.sciencedirect.com</a></li>
+        <li>arXiv — <a href="https://arxiv.org">https://arxiv.org</a></li>
+    </ul>
+
+    <hr>
+    <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 32px;">
+        ACNE AI — Software Requirements Specification v2.0 — March 2026
+    </p>
+
+</body>
+
+</html>

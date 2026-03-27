@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Acne AI — Complete Codebase Walkthrough</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{margin:0.5in 0.6in;size:A4}
+body{font-family:'Inter',sans-serif;color:#1e293b;background:#fff;line-height:1.65;font-size:10pt}
+.cover{page-break-after:always;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:88vh;text-align:center;padding:40px}
+.badge{display:inline-block;padding:5px 18px;background:linear-gradient(135deg,#6366f1,#06b6d4);color:white;font-weight:700;font-size:8pt;border-radius:50px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px}
+.cover h1{font-size:24pt;font-weight:900;color:#0f172a;margin-bottom:8px}
+.cover h2{font-size:12pt;font-weight:500;color:#64748b;margin-bottom:30px}
+.line{width:60px;height:3px;background:linear-gradient(to right,#6366f1,#06b6d4);border-radius:4px;margin:16px auto}
+.meta{font-size:9pt;color:#94a3b8;line-height:2}
+h2.s{font-size:14pt;font-weight:900;color:#0f172a;margin:28px 0 4px;padding-bottom:5px;border-bottom:3px solid #6366f1;display:inline-block;page-break-after:avoid}
+.sm{font-size:9pt;color:#6366f1;font-weight:700;margin-bottom:12px;display:block}
+h3{font-size:11pt;font-weight:800;color:#334155;margin:14px 0 5px;page-break-after:avoid}
+h4{font-size:10pt;font-weight:700;color:#475569;margin:10px 0 4px}
+p{margin-bottom:7px}
+ul,ol{margin:5px 0 10px 20px}
+li{margin-bottom:4px}
+strong{font-weight:700;color:#0f172a}
+table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:9pt}
+th{background:#f1f5f9;font-weight:700;text-align:left;padding:7px 10px;border:1px solid #e2e8f0;color:#334155}
+td{padding:7px 10px;border:1px solid #e2e8f0;color:#475569}
+tr:nth-child(even) td{background:#f8fafc}
+code{background:#f1f5f9;padding:1px 5px;border-radius:3px;font-size:8.5pt;font-family:'JetBrains Mono',monospace;color:#7c3aed}
+pre{background:#0f172a;color:#e2e8f0;padding:14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:8pt;line-height:1.5;overflow-x:auto;margin:8px 0 14px;white-space:pre-wrap;word-wrap:break-word}
+pre .cm{color:#64748b}
+pre .kw{color:#c084fc}
+pre .fn{color:#67e8f9}
+pre .st{color:#86efac}
+pre .nb{color:#fbbf24}
+.co{background:#eef2ff;border-left:4px solid #6366f1;padding:10px 14px;border-radius:0 8px 8px 0;margin:8px 0;font-size:9pt}
+.pb{page-break-before:always}
+.tree{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:8pt;line-height:1.6;white-space:pre;margin:8px 0 14px}
+.foot{margin-top:24px;padding-top:14px;border-top:2px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:7.5pt}
+.flow{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:7.5pt;line-height:1.5;white-space:pre;margin:8px 0 14px}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+<div class="badge">Complete Codebase Walkthrough</div>
+<h1>Acne AI — Every File Explained</h1>
+<h2>So You Can Tackle Any Question</h2>
+<div class="line"></div>
+<div class="meta">
+<strong>Stack:</strong> Next.js 16 · Flask · Keras 3 (PyTorch backend) · EfficientNetB4 · MediaPipe · Three.js<br>
+<strong>Frontend Pages:</strong> 6 routes · <strong>Components:</strong> 5 · <strong>Backend Files:</strong> 8 · <strong>Config Files:</strong> 3
+</div>
+</div>
+
+<!-- ═══ PROJECT STRUCTURE ═══ -->
+<h2 class="s">Project Directory Structure</h2>
+<span class="sm">The full file tree and what each folder/file does</span>
+
+<div class="tree">newapp/                           ← Root of the entire project
+├── app/                          ← FRONTEND (Next.js 16 App Router)
+│   ├── page.tsx                  ← Landing page (3D face + hero section)
+│   ├── layout.tsx                ← Root layout (Google Fonts, metadata, body wrapper)
+│   ├── globals.css               ← Global styles, theme variables, skeleton animations
+│   ├── analyze/page.tsx          ← Camera/upload → AI analysis → results
+│   ├── skin-quiz/page.tsx        ← Gender-aware skin type quiz
+│   ├── history/page.tsx          ← Scan history + progress trend chart
+│   ├── treatments/page.tsx       ← Personalized skincare routines page
+│   ├── login/page.tsx            ← Simple auth gate (localStorage)
+│   └── api/                      ← Next.js API route (proxy to Flask)
+│
+├── components/                   ← REUSABLE REACT COMPONENTS
+│   ├── HeroScene.tsx             ← 3D wireframe face (Three.js + R3F)
+│   ├── ResultsView.tsx           ← Full results dashboard after analysis
+│   ├── SeverityGauge.tsx         ← Animated circular severity gauge
+│   ├── HistoryList.tsx           ← Past scan log list component
+│   └── ProgressTracker.tsx       ← SVG severity trend chart
+│
+├── acne_ai_project/              ← BACKEND + ML SYSTEM
+│   ├── api/
+│   │   └── app.py                ← Flask server (POST /predict, GET /health)
+│   ├── inference/
+│   │   ├── pipeline.py           ← Main ML pipeline (load→detect→classify→recommend)
+│   │   └── face_detection.py     ← MediaPipe face detector + HSV skin fallback
+│   ├── config/
+│   │   ├── config.yaml           ← Hyperparameters, paths, model settings
+│   │   ├── recommendations.json  ← Treatment database (keyed by severity)
+│   │   └── class_labels.json     ← Class index → label mapping
+│   ├── training/
+│   │   ├── train_severity.py     ← Main training script (2-phase transfer learning)
+│   │   ├── oversample_severe.py  ← Data augmentation for class balancing
+│   │   └── finetune_classifier.py← Alternative fine-tuning script
+│   ├── models/saved/             ← Trained .keras model weights
+│   └── data/severity/            ← Dataset (train/val split with Mild/Moderate/Severe)
+│
+├── package.json                  ← Node.js dependencies
+├── next.config.ts                ← Next.js config (API rewrites to Flask)
+├── docker-compose.yml            ← Docker setup for deployment
+└── acne_ai_colab_training.ipynb  ← Google Colab notebook for GPU training</div>
+
+<!-- ═══ BACKEND WALKTHROUGH ═══ -->
+<div class="pb"></div>
+<h2 class="s">Backend — File by File Walkthrough</h2>
+<span class="sm">Flask API + ML Pipeline + Face Detection + Training</span>
+
+<h3>File 1: <code>api/app.py</code> — Flask REST API Server</h3>
+<p><strong>Purpose:</strong> This is the entry point of the entire backend. It starts a Flask web server on <strong>port 5000</strong> and exposes two endpoints.</p>
+
+<table>
+<tr><th>Endpoint</th><th>Method</th><th>What It Does</th></tr>
+<tr><td><code>/health</code></td><td>GET</td><td>Returns {"status": "healthy", "model_loaded": true/false} — used to check if backend is running</td></tr>
+<tr><td><code>/predict</code></td><td>POST</td><td>Accepts multipart form with <code>image</code> file + <code>skin_type</code> string → runs full ML pipeline → returns JSON report</td></tr>
+</table>
+
+<p><strong>Key code flow:</strong></p>
+<pre><span class="cm"># On startup:</span>
+pipeline = AcnePipeline()  <span class="cm"># Loads ML model into memory</span>
+
+<span class="cm"># When user uploads image:</span>
+file = request.files[<span class="st">'image'</span>]
+skin_type = request.form.get(<span class="st">'skin_type'</span>, <span class="st">'Normal'</span>)
+image_bytes = file.read()  <span class="cm"># Read raw bytes (no temp file!)</span>
+report = pipeline.predict(image_bytes=image_bytes, skin_type=skin_type)
+<span class="kw">return</span> jsonify(report)  <span class="cm"># Send JSON back to frontend</span></pre>
+
+<div class="co"><strong>Why read bytes directly?</strong> Writing to a temp file on disk is slow and causes path issues on Windows. Reading bytes directly into memory via <code>np.frombuffer()</code> is faster and more portable.</div>
+
+<h3>File 2: <code>inference/pipeline.py</code> — The Brain of the System</h3>
+<p><strong>Purpose:</strong> Orchestrates the entire prediction flow. This is the most important backend file.</p>
+
+<h4>Class: <code>AcnePipeline</code></h4>
+<p><strong>On initialization (<code>__init__</code>):</strong></p>
+<ol>
+<li>Loads <code>config.yaml</code> for paths and settings.</li>
+<li>Creates a <code>FaceDetector</code> instance (MediaPipe).</li>
+<li>Loads the trained <code>best_severity.keras</code> model via <code>keras.saving.load_model()</code>.</li>
+<li>If model file is missing → enters <strong>mock mode</strong> (returns random predictions for testing).</li>
+</ol>
+
+<h4>Method: <code>predict(image_bytes, skin_type)</code> — The Main Pipeline</h4>
+<pre><span class="cm"># Step 1: Read image from bytes</span>
+nparr = np.frombuffer(image_bytes, np.uint8)
+original_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+rgb_img = cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB)
+
+<span class="cm"># Step 2: Face detection (REQUIRED)</span>
+cropped_face, bbox = self.face_detector.detect_and_crop(rgb_img)
+<span class="cm"># If no face AND no skin → return error JSON immediately</span>
+
+<span class="cm"># Step 3: Preprocess for model</span>
+img_size = self.classifier.input_shape[1:3]  <span class="cm"># e.g. (224, 224)</span>
+input_img = cv2.resize(cropped_face, img_size)
+input_img = input_img / 255.0  <span class="cm"># Normalize to [0, 1]</span>
+input_img = np.expand_dims(input_img, axis=0)  <span class="cm"># Add batch dim</span>
+
+<span class="cm"># Step 4: Model prediction (Softmax output)</span>
+preds = self.classifier.predict(input_img)  <span class="cm"># [0.05, 0.87, 0.08]</span>
+top_idx = np.argmax(preds[0])  <span class="cm"># → 1 (Moderate)</span>
+confidence = preds[0][top_idx] * 100  <span class="cm"># → 87.0%</span>
+severity = SEVERITY_LABELS[top_idx]  <span class="cm"># → "Moderate"</span>
+
+<span class="cm"># Step 5: Safety check</span>
+<span class="kw">if</span> confidence < 40.0:
+    severity = <span class="st">"Inconclusive"</span>  <span class="cm"># Model is unsure</span>
+
+<span class="cm"># Step 6: Get personalized recommendations</span>
+recommendations = self.get_recommendations(severity, skin_type)</pre>
+
+<h4>Method: <code>get_recommendations(severity, skin_type)</code></h4>
+<p>Loads <code>recommendations.json</code> and returns a structured object:</p>
+<pre>{
+  <span class="st">"likely_types"</span>: [<span class="st">"Papules"</span>, <span class="st">"Pustules"</span>],
+  <span class="st">"morning_routine"</span>: [<span class="st">"Step 1..."</span>, <span class="st">"Step 2..."</span>],
+  <span class="st">"night_routine"</span>: [...],
+  <span class="st">"key_ingredients"</span>: [{<span class="st">"name"</span>: <span class="st">"Salicylic Acid"</span>, <span class="st">"purpose"</span>: <span class="st">"Unclogs pores"</span>}],
+  <span class="st">"products"</span>: [{<span class="st">"name"</span>: <span class="st">"CeraVe Cleanser"</span>, <span class="st">"type"</span>: <span class="st">"Cleanser"</span>, ...}],
+  <span class="st">"dos"</span>: [...], <span class="st">"donts"</span>: [...],
+  <span class="st">"timeline"</span>: <span class="st">"4-6 weeks"</span>
+}</pre>
+
+<h3>File 3: <code>inference/face_detection.py</code> — Face Detection</h3>
+<p><strong>Purpose:</strong> Detects and crops the face from the image. Has a smart 2-level fallback system.</p>
+
+<h4>Detection Logic:</h4>
+<pre><span class="cm"># Level 1: MediaPipe Face Detection</span>
+results = self.face_detection.process(rgb_image)
+<span class="kw">if</span> results.detections:
+    <span class="cm"># Get bounding box → crop face with 20% padding</span>
+    <span class="kw">return</span> cropped_face
+
+<span class="cm"># Level 2: HSV Skin-Tone Fallback</span>
+<span class="cm"># For close-up skin photos that don't show the full face</span>
+hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+lower_skin = [0, 30, 60]   <span class="cm"># HSV lower bound for skin tones</span>
+upper_skin = [35, 255, 255] <span class="cm"># HSV upper bound</span>
+skin_ratio = count_skin_pixels / total_pixels
+<span class="kw">if</span> skin_ratio > 0.25:  <span class="cm"># More than 25% skin → accept</span>
+    <span class="kw">return</span> full_image
+
+<span class="cm"># Level 3: If both fail → return None (API returns error)</span></pre>
+
+<div class="co"><strong>Why the skin-tone fallback?</strong> Dermatologists often photograph close-up patches of skin (forehead, cheek) without the full face in frame. The HSV check accepts these valid clinical photos while still rejecting garbage images (landscapes, objects).</div>
+
+<h3>File 4: <code>training/train_severity.py</code> — Model Training Script</h3>
+<p><strong>Purpose:</strong> Trains the EfficientNetB4 model using a 2-phase transfer learning strategy. Designed to run on <strong>Google Colab with a T4 GPU</strong>.</p>
+
+<h4>Phase 1 — Feature Extraction (Backbone Frozen)</h4>
+<table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Backbone</td><td>EfficientNetB4 (frozen — all layers non-trainable)</td></tr>
+<tr><td>Trainable Layers</td><td>Only the custom head (GAP → Dense(768) → Dense(384) → Dense(3))</td></tr>
+<tr><td>Learning Rate</td><td>Cosine annealing with warmup: 1e-6 → 1e-3 → 1e-6</td></tr>
+<tr><td>Loss</td><td>CategoricalCrossentropy with label_smoothing=0.1</td></tr>
+<tr><td>Metrics</td><td>Accuracy, Precision, Recall</td></tr>
+<tr><td>Epochs</td><td>20 (early stopping patience: 8)</td></tr>
+</table>
+
+<h4>Phase 2 — Fine-Tuning (Top 70% Unfrozen)</h4>
+<table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Unfrozen</td><td>Top 70% of all model layers (deeper feature adaptation)</td></tr>
+<tr><td>BatchNorm layers</td><td>Kept frozen (prevents statistics corruption on small batches)</td></tr>
+<tr><td>Learning Rate</td><td>Cosine annealing: 1e-7 → 3e-5 → 1e-7</td></tr>
+<tr><td>Epochs</td><td>100 (early stopping patience: 20)</td></tr>
+</table>
+
+<h4>Built-in Augmentation (Inside the Model)</h4>
+<pre><span class="cm"># These run ON THE GPU during training, disabled at inference</span>
+data_augmentation = keras.Sequential([
+    RandomFlip(<span class="st">"horizontal"</span>),
+    RandomRotation(0.25),
+    RandomZoom(0.25),
+    RandomContrast(0.3),
+    RandomBrightness(0.2),
+    RandomTranslation(0.1, 0.1),
+])</pre>
+
+<h4>Class Weighting</h4>
+<pre><span class="cm"># sklearn computes weights inversely proportional to class frequency</span>
+class_weights = compute_class_weight(<span class="st">'balanced'</span>, classes, labels)
+<span class="cm"># Result: Severe class gets higher weight → model pays more attention to it</span></pre>
+
+<h3>File 5: <code>training/oversample_severe.py</code> — Data Balancing</h3>
+<p><strong>Purpose:</strong> The Severe class had only ~1,814 images vs ~4,200 for Mild. This script generates augmented copies of Severe images to balance the dataset to ~3,400 images.</p>
+<p><strong>Techniques:</strong> Horizontal flip, brightness (0.7–1.3), contrast (0.7–1.3), rotation (±15°), Gaussian blur, sharpness, color jitter.</p>
+
+<!-- ═══ FRONTEND WALKTHROUGH ═══ -->
+<div class="pb"></div>
+<h2 class="s">Frontend — File by File Walkthrough</h2>
+<span class="sm">Next.js 16 Pages + React Components</span>
+
+<h3>Page 1: <code>app/page.tsx</code> — Landing Page</h3>
+<p><strong>What users see:</strong> A premium dark-themed hero section with the 3D wireframe face in the background, animated text reveal ("ACNE AI"), feature cards (AI Analysis, Skin Quiz, Track Progress), and CTA buttons.</p>
+<p><strong>Key tech:</strong> Framer Motion for scroll animations, <code>HeroScene.tsx</code> for the 3D background.</p>
+
+<h3>Component: <code>HeroScene.tsx</code> — 3D Interactive Face</h3>
+<p><strong>What it does:</strong> Renders a procedurally-generated 3D wireframe human face using Three.js + React Three Fiber.</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li><code>buildFaceGeo()</code> — Creates face geometry by mathematically sculpting a sphere: adds brow ridges, eye sockets, nose protrusion, lips, chin, jaw line, cheekbones, and ears.</li>
+<li><code>WireframeFace</code> — Renders the face with wireframe material + interactive mouse tracking rotation.</li>
+<li><code>LandmarkDots</code> — Places 30 glowing dots at facial landmark positions (eyes, nose, lips, jaw).</li>
+<li><code>ScanBeam</code> — Horizontal scanning line that moves up and down.</li>
+<li><code>ScanRings</code> — Orbiting ring halos around the face.</li>
+<li><code>DataParticles</code> — 800 floating particles in a spherical cloud.</li>
+<li><code>Rig</code> — Camera follows the mouse cursor for parallax effect.</li>
+</ul>
+<p><strong>Mouse tracking code:</strong></p>
+<pre><span class="cm">// The face rotates toward the user's cursor</span>
+<span class="kw">const</span> targetRotY = Math.sin(t * 0.18) * 0.20 + scroll * 3.5 + (pointer.x * 0.4);
+<span class="kw">const</span> targetRotX = Math.sin(t * 0.12) * 0.04 + scroll * 0.8 + (-pointer.y * 0.3);
+groupRef.rotation.y = THREE.MathUtils.lerp(current.y, targetRotY, 0.05);</pre>
+
+<h3>Page 2: <code>app/skin-quiz/page.tsx</code> — Skin Quiz</h3>
+<p><strong>Flow:</strong></p>
+<ol>
+<li><strong>Gender Selection</strong> → Presents 3 options (Female, Male, Other) with icons.</li>
+<li><strong>Dynamic Questions</strong> → <code>getQuestions(gender)</code> returns 5-6 questions based on gender:
+    <ul><li>All genders: skin oiliness, sensitivity, pore size, breakout frequency, post-wash feeling</li>
+    <li>Males get: "How does your skin react to shaving?"</li>
+    <li>Females get: "Do breakouts worsen around your menstrual cycle?"</li></ul>
+</li>
+<li><strong>Result Calculation</strong> → <code>determineSkinType(answers)</code> uses a scoring algorithm to map answers to: Oily, Dry, Combination, Sensitive, or Normal.</li>
+<li><strong>Storage</strong> → Saves <code>skin_type</code> and <code>user_gender</code> to <code>localStorage</code>.</li>
+</ol>
+
+<h3>Page 3: <code>app/analyze/page.tsx</code> — The Core Analysis Page</h3>
+<p><strong>States:</strong> Camera → Captured Image → Skeleton Loader → Results Dashboard</p>
+<p><strong>Flow:</strong></p>
+<pre><span class="cm">// 1. User captures/uploads image → stored in state</span>
+setImage(imageSrc)
+
+<span class="cm">// 2. Convert base64 to blob and send to API</span>
+<span class="kw">const</span> formData = <span class="kw">new</span> FormData();
+formData.append(<span class="st">'image'</span>, blob, <span class="st">'capture.jpg'</span>);
+formData.append(<span class="st">'skin_type'</span>, skinType || <span class="st">'Normal'</span>);
+
+<span class="cm">// 3. POST to Flask via Next.js rewrite</span>
+<span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="st">'/api/predict'</span>, { method: <span class="st">'POST'</span>, body: formData });
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();
+
+<span class="cm">// 4. Save scan to history (localStorage)</span>
+<span class="kw">const</span> entry = { date, severity, confidence, skinType };
+localStorage.setItem(<span class="st">'acne_history'</span>, JSON.stringify([...history, entry]));
+
+<span class="cm">// 5. Display results via &lt;ResultsView /&gt;</span>
+setResults(data);</pre>
+
+<p><strong>Skeleton Loader State:</strong> While <code>analyzing === true</code>, the page shows a 2-column grid with shimmering placeholder blocks that exactly mirror the ResultsView layout — preventing layout shift when results load.</p>
+
+<h3>Component: <code>ResultsView.tsx</code> — Results Dashboard</h3>
+<p>The largest component (~480 lines). Shows the complete analysis report:</p>
+<table>
+<tr><th>Section</th><th>What It Shows</th></tr>
+<tr><td>Image Overlay</td><td>Original photo with severity badge + acne type tags</td></tr>
+<tr><td>Severity Gauge</td><td>Animated circular gauge (green/amber/red) with confidence %</td></tr>
+<tr><td>Urgency Banner</td><td>Color-coded advice: Mild→"Looking Good", Moderate→"Monitor Closely", Severe→"See a Doctor"</td></tr>
+<tr><td>Timeline</td><td>"Expected results: 4-6 weeks"</td></tr>
+<tr><td>AM/PM Routines</td><td>Tab switcher: Morning ☀️ / Night 🌙 with numbered steps</td></tr>
+<tr><td>Key Ingredients</td><td>Hoverable pills showing purpose tooltips</td></tr>
+<tr><td>Do's & Don'ts</td><td>2-column grid with ✓/✗ markers</td></tr>
+<tr><td>Products</td><td>Recommended product cards with type + key ingredient</td></tr>
+<tr><td>Type Treatments</td><td>Expandable accordion for each acne type detected</td></tr>
+<tr><td>Export Buttons</td><td>New Photo · Share (WhatsApp/native) · PDF Download</td></tr>
+</table>
+
+<h3>Page 4: <code>app/history/page.tsx</code> — Progress Tracking</h3>
+<p>Reads <code>acne_history</code> from localStorage. Uses <code>ProgressTracker.tsx</code> (custom SVG chart) to visualize severity over time. Shows an improving/worsening/stable status badge. Lists all past scans with date, severity, and confidence.</p>
+
+<h3>Component: <code>SeverityGauge.tsx</code> — Animated Gauge</h3>
+<p>A pure SVG circular gauge. Color changes based on severity: green (#34d399) for Mild, amber (#fbbf24) for Moderate, red (#f87171) for Severe. The arc length is proportional to the confidence percentage. Animated on mount.</p>
+
+<!-- ═══ DATA FLOW ═══ -->
+<div class="pb"></div>
+<h2 class="s">Complete Data Flow — End to End</h2>
+<span class="sm">From user opening the app to seeing results</span>
+
+<div class="flow">USER opens localhost:3000 → Landing Page (app/page.tsx)
+  │
+  ├── Clicks "Take Skin Quiz" → /skin-quiz
+  │   └── Selects gender → Answers 5-6 questions → determineSkinType()
+  │       └── Saves to localStorage: { skin_type: "Oily", user_gender: "male" }
+  │
+  ├── Clicks "Analyze Skin" → /analyze
+  │   ├── Camera opens (react-webcam) OR user uploads file
+  │   ├── User clicks "Capture" → base64 image stored in state
+  │   ├── Clicks "Analyze" → triggers analyze() function:
+  │   │   ├── Reads skin_type from localStorage
+  │   │   ├── Converts base64 → Blob → FormData
+  │   │   ├── POST /api/predict (Next.js rewrites to Flask :5000/predict)
+  │   │   │
+  │   │   │   FLASK BACKEND:
+  │   │   │   ├── file.read() → raw bytes
+  │   │   │   ├── np.frombuffer() → cv2.imdecode() → RGB image
+  │   │   │   ├── MediaPipe face detection → crop face (20% padding)
+  │   │   │   │   └── Fallback: HSV skin check (&gt;25% skin pixels)
+  │   │   │   ├── cv2.resize(224,224) → /255.0 → expand_dims → (1,224,224,3)
+  │   │   │   ├── model.predict() → Softmax → [0.05, 0.87, 0.08]
+  │   │   │   ├── argmax → "Moderate" at 87% confidence
+  │   │   │   ├── if confidence &lt; 40% → "Inconclusive"
+  │   │   │   ├── get_recommendations("Moderate", "Oily")
+  │   │   │   │   └── Loads recommendations.json → returns routines, ingredients, etc.
+  │   │   │   └── Returns JSON report
+  │   │   │
+  │   │   ├── Frontend receives JSON → setResults(data)
+  │   │   ├── Saves scan to localStorage history
+  │   │   └── Renders &lt;ResultsView&gt; with full dashboard
+  │   │
+  │   └── User can: "New Photo" | "Share" | "Download PDF"
+  │
+  └── Clicks "History" → /history
+      ├── Reads acne_history from localStorage
+      ├── Renders ProgressTracker SVG chart (severity over time)
+      └── Lists all past scans with dates and details</div>
+
+<!-- ═══ CONFIG FILES ═══ -->
+<h2 class="s">Configuration Files Explained</h2>
+<span class="sm">What each config file controls</span>
+
+<h3><code>config/config.yaml</code></h3>
+<table>
+<tr><th>Section</th><th>Key Settings</th></tr>
+<tr><td><code>data:</code></td><td>image_size: [380,380], batch_size: 16, train/val/test splits</td></tr>
+<tr><td><code>augmentation:</code></td><td>rotation: 30°, brightness/contrast: [0.8, 1.2], horizontal_flip: true</td></tr>
+<tr><td><code>model:</code></td><td>backbone: EfficientNetB4, dropout: 0.5, lr_frozen: 0.001, lr_finetune: 0.00003</td></tr>
+<tr><td><code>paths:</code></td><td>raw_data, processed_data, models (where .keras files go), logs</td></tr>
+<tr><td><code>deployment:</code></td><td>confidence_threshold: 0.6, max_inference_time: 3000ms</td></tr>
+</table>
+
+<h3><code>config/recommendations.json</code></h3>
+<p>A ~16KB JSON database structured as:</p>
+<pre>{
+  <span class="st">"Mild"</span>: {
+    <span class="st">"likely_types"</span>: [<span class="st">"Whiteheads"</span>, <span class="st">"Blackheads"</span>],
+    <span class="st">"morning_routine"</span>: [<span class="st">"Gentle cleanser"</span>, <span class="st">"Moisturizer"</span>, <span class="st">"SPF 30+"</span>],
+    <span class="st">"night_routine"</span>: [...],
+    <span class="st">"key_ingredients"</span>: [{<span class="st">"name"</span>: <span class="st">"Salicylic Acid"</span>, ...}],
+    <span class="st">"products"</span>: [...],
+    <span class="st">"dos"</span>: [...], <span class="st">"donts"</span>: [...],
+    <span class="st">"timeline"</span>: <span class="st">"2-4 weeks"</span>,
+    <span class="st">"by_skin_type"</span>: { <span class="st">"Oily"</span>: [...], <span class="st">"Dry"</span>: [...] }
+  },
+  <span class="st">"Moderate"</span>: { ... },
+  <span class="st">"Severe"</span>: { ... }
+}</pre>
+
+<!-- ═══ KEY CONCEPTS ═══ -->
+<div class="pb"></div>
+<h2 class="s">Key Concepts to Know for Any Question</h2>
+<span class="sm">Quick-fire explanations for common viva questions</span>
+
+<h3>Transfer Learning</h3>
+<p>Instead of training a CNN from scratch (needs millions of images), we take a model already trained on ImageNet (14M images) and <strong>replace only the last few layers</strong> with our custom head. The pretrained backbone already knows how to detect edges, textures, and patterns — we just teach it what acne looks like.</p>
+
+<h3>Softmax Function</h3>
+<p>Converts raw model outputs (logits) into a probability distribution. Formula: <code>σ(zᵢ) = e^zᵢ / Σ(e^zⱼ)</code>. All outputs sum to exactly 1.0. The class with the highest probability wins.</p>
+
+<h3>Why Keras 3 with PyTorch Backend?</h3>
+<p>Keras 3 is backend-agnostic. We use <code>os.environ["KERAS_BACKEND"] = "torch"</code> so that all tensor operations run on PyTorch. This gives us CUDA GPU support via PyTorch while keeping the simple Keras API for building models.</p>
+
+<h3>Mixed Precision (FP16)</h3>
+<p>Uses 16-bit floating point instead of 32-bit during training. Halves memory usage and doubles GPU throughput. Set via <code>keras.mixed_precision.set_global_policy('mixed_float16')</code>.</p>
+
+<h3>Label Smoothing</h3>
+<p>Instead of hard labels [0, 1, 0], uses soft labels [0.033, 0.933, 0.033]. This prevents the model from becoming overconfident and improves generalization. Set via <code>CategoricalCrossentropy(label_smoothing=0.1)</code>.</p>
+
+<h3>Cosine Annealing with Warmup</h3>
+<p>Learning rate starts very low (warmup phase: 5 epochs, linear ramp from 1e-7 to 3e-5), then decays following a cosine curve back to 1e-7. This helps the model converge smoothly without overshooting during fine-tuning.</p>
+
+<h3>Class Weighting</h3>
+<p>Sklearn's <code>compute_class_weight('balanced')</code> assigns higher loss multipliers to underrepresented classes. If Severe has fewer images, its weight is increased so the model "pays more attention" to getting Severe predictions right.</p>
+
+<h3>Why MediaPipe for Face Detection?</h3>
+<p>Google MediaPipe is lightweight (~2MB model), runs in real-time, works across all skin tones, and doesn't require a GPU. It's more reliable than OpenCV's Haar Cascades and lighter than MTCNN or RetinaFace.</p>
+
+<h3>Next.js API Rewrites</h3>
+<p>The frontend (port 3000) can't directly call the Flask backend (port 5000) due to CORS. The <code>next.config.ts</code> file contains a rewrite rule: <code>/api/predict → http://localhost:5000/predict</code>. This proxies the request through Next.js, avoiding CORS entirely.</p>
+
+<h3>localStorage for Privacy</h3>
+<p>We store scan history, skin type, and gender in the browser's localStorage — NOT on any server. This means: (a) user data never leaves their device, (b) no database needed, (c) complete privacy. The tradeoff is data is lost if the user clears their browser.</p>
+
+<div class="foot">
+Acne AI — Complete Codebase Walkthrough · March 2026<br>
+Open in browser → <strong>Ctrl + P → Save as PDF</strong>
+</div>
+
+</body>
+</html>

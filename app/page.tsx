@@ -34,7 +34,7 @@ function StaggeredText({ text, className }: { text: string; className?: string }
   };
 
   return (
-    <motion.h1 className={className} variants={container} initial="hidden" animate="visible">
+    <motion.h1 className={className} variants={container} initial="hidden" animate="visible" suppressHydrationWarning>
       {text.split("").map((char, i) => (
         <motion.span key={i} variants={child} className="inline-block">
           {char === " " ? "\u00A0" : char}
@@ -80,6 +80,7 @@ export default function Home() {
           <div className="flex items-center gap-6 md:gap-8 text-xs md:text-sm font-medium tracking-widest uppercase text-zinc-400">
             <Link href="/skin-quiz" className="hover:text-white transition-colors">Quiz</Link>
             <Link href="/analyze" className="hover:text-white transition-colors">Scan</Link>
+            <Link href="/treatments" className="hover:text-white transition-colors">Treatments</Link>
             <Link href="/history" className="hover:text-white transition-colors">History</Link>
           </div>
         </div>
@@ -103,7 +104,7 @@ export default function Home() {
 
           <StaggeredText
             text="Clear Skin Starts Here."
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.9]"
+            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.9] whitespace-nowrap"
           />
 
           <motion.p

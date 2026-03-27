@@ -1,6 +1,6 @@
 "use client";
 
-import { Share2, RefreshCw, AlertCircle, CheckCircle2, ChevronDown, Stethoscope, ShieldAlert, Heart, Sun, Moon, ShoppingBag, ThumbsUp, ThumbsDown, Clock, FlaskConical, Pill, FileDown } from "lucide-react";
+import { Share2, RefreshCw, AlertCircle, CheckCircle2, ChevronDown, Stethoscope, ShieldAlert, Heart, Sun, Moon, ShoppingBag, ThumbsUp, ThumbsDown, Clock, FlaskConical, Pill, Download } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import SeverityGauge from "./SeverityGauge";
@@ -455,7 +455,7 @@ export default function ResultsView({ results, image, onReset }: ResultsViewProp
                             }}
                             className="px-5 py-4 bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-xl font-bold transition-all duration-200 border border-white/5 hover:border-white/15 hover:scale-[1.01] flex items-center gap-2"
                         >
-                            <FileDown className="w-5 h-5" />
+                            <Download className="w-5 h-5" />
                             PDF
                         </button>
                     </div>
