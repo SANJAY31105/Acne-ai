@@ -34,8 +34,10 @@ class AcnePipeline:
         # Load Face Detector
         self.face_detector = FaceDetector()
         
-        # Load Severity Classifier (MobileNetV2)
-        self.classifier_path = os.path.join(self.config['paths']['models'], 'best_severity.keras')
+        # Load Severity Classifier
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.classifier_path = os.path.join(base_dir, "models", "saved", 'best_severity.keras')
+        
         if os.path.exists(self.classifier_path):
             try:
                 self.classifier = keras.saving.load_model(self.classifier_path)
@@ -44,28 +46,9 @@ class AcnePipeline:
                 print(f"Failed to load severity classifier: {e}")
                 self.classifier = None
         else:
-            print("Warning: Severity model not found. Using mock mode.")
+            print(f"Warning: Severity model not found at {self.classifier_path}. Using mock mode.")
             self.classifier = None
         
-    def mock_predict(self, image_path):
-        """Simulate a severity prediction for testing."""
-        import random
-        
-        severity = random.choice(["Mild", "Moderate", "Severe"])
-        confidence = round(random.uniform(65.0, 95.0), 2)
-        
-        report = {
-            "status": "success",
-            "mode": "mock",
-            "face_detected": True,
-            "primary_diagnosis": {
-                "severity": severity,
-                "confidence": confidence
-            },
-            "recommendations": self.get_recommendations(severity)
-        }
-        return report
-
     def get_recommendations(self, severity, skin_type="Normal"):
         """Fetch personalized recommendations based on severity + skin type."""
         rec_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "recommendations.json")
@@ -107,14 +90,13 @@ class AcnePipeline:
         """
         Full pipeline:
         1. Read Image (from bytes or file path)
-        2. Optionally detect face
+        2. ALWAYS detect face (even in mock mode)
         3. Classify severity (Mild/Moderate/Severe)
         4. Generate Report with likely acne types + personalized recommendations
         """
-        # FALLBACK TO MOCK IF NO CLASSIFIER
-        if self.classifier is None:
+        is_mock = self.classifier is None
+        if is_mock:
             print("Using MOCK inference (severity model missing).")
-            return self.mock_predict(image_path)
 
         # 1. Read Image — prefer in-memory bytes to avoid filesystem issues
         if image_bytes is not None:
