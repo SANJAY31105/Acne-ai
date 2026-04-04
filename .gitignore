@@ -1,64 +1,28 @@
 # Dependencies
-node_modules
-.next
-.nuxt
-.cache
-.parcel-cache
-.turbo
-dist
-coverage
-tmp
+node_modules/
+mobile/node_modules/
+.expo/
 
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# IDE
-.idea
-.vscode
-*.swp
-*.swo
+# Next.js
+.next/
+out/
 
 # Python
 __pycache__/
 *.pyc
-*.pyo
-venv/
-.venv/
+.env
+*.egg-info/
 
-# Model files (large binaries)
-acne_ai_project/models/saved/*.keras
-acne_ai_project/models/saved/*.h5
-*.pt
+# Model files (tracked by Git LFS)
+# *.keras
 
-# Training data (large datasets)
-acne_ai_project/data/raw/
-acne_ai_project/data/processed/
-acne_ai_project/data/severity/
-data/
+# IDE
+.vscode/
+.idea/
 
-# Training logs
-acne_ai_project/training/logs/*.csv
-
-# Old public models
-js/public/models/
+# OS
+.DS_Store
+Thumbs.db
 
 # Temp
-temp_*
-*.tmp
-.vercel
-.env*.local
+*.log

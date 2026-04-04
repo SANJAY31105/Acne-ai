@@ -1,10 +1,12 @@
 services:
   - type: web
     name: acne-ai-api
-    runtime: docker
-    dockerfilePath: ./Dockerfile.backend
+    runtime: python
     plan: free
+    buildCommand: pip install -r acne_ai_project/requirements-render.txt
+    startCommand: cd acne_ai_project && gunicorn --bind 0.0.0.0:$PORT --timeout 120 --workers 1 api.app:app
     envVars:
       - key: PYTHON_VERSION
-        value: "3.10"
-    healthCheckPath: /health
+        value: "3.10.12"
+      - key: KERAS_BACKEND
+        value: torch
